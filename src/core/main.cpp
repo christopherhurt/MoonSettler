@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image.h>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
@@ -14,6 +15,13 @@ static const float vertices[] = {
 	-0.5f,  0.5f, 0.0f, // V1
 	 0.5f,  0.5f, 0.0f, // V2
 	 0.5f, -0.5f, 0.0f  // V3
+};
+
+static const float texCoords[] = {
+	0.0f, 0.0f, // V0
+	0.0f, 1.0f, // V1
+	1.0f, 1.0f, // V2
+	1.0f, 0.0f  // V3
 };
 
 static const unsigned int indices[] = {
@@ -53,7 +61,8 @@ int main() {
 	// Set configurations
 	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-
+	stbi_set_flip_vertically_on_load(true);
+	
 	// Load shaders
 	string vertFile = string("src/shaders/vert.glsl");
 	string fragFile = string("src/shaders/frag.glsl");
@@ -61,7 +70,7 @@ int main() {
 	shader.use();
 
 	// Construct objects
-	Mesh mesh(vertices, 12, indices, 6);
+	Mesh mesh(vertices, 12, texCoords, 8, indices, 6);
 	mesh.bind();
 
 	// Game loop
@@ -71,7 +80,10 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//
 		// Do updating here
+		//
+
 		glfwPollEvents();
 
 		// Toggle draw mode
