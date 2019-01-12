@@ -4,6 +4,7 @@
 #include <fstream>
 #include <streambuf>
 #include <string>
+#include "core/shader.h"
 
 using namespace std;
 
@@ -44,62 +45,6 @@ static unsigned int constructTriangle() {
 	return vao;
 }
 
-static unsigned int constructShaders() {
-	// Vertex shader
-	ifstream vertFile("src/shaders/vert.glsl");
-	string vertSourceStr((istreambuf_iterator<char>(vertFile)), istreambuf_iterator<char>());
-	const char * vertSource = vertSourceStr.c_str();
-	unsigned int vertShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertShader, 1, &vertSource, NULL);
-	glCompileShader(vertShader);
-
-	// Check vertex shader
-	int success;
-	const int LOG_LEN = 1024;
-	char log[LOG_LEN];
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertShader, LOG_LEN, NULL, log);
-		cerr << "Error in vertex shader:\n" << log << endl;
-		exit(-1);
-	}
-
-	// Fragment shader
-	ifstream fragFile("src/shaders/frag.glsl");
-	string fragSourceStr((istreambuf_iterator<char>(fragFile)), istreambuf_iterator<char>());
-	const char * fragSource = fragSourceStr.c_str();
-	unsigned int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, &fragSource, NULL);
-	glCompileShader(fragShader);
-
-	// Check fragment shader
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragShader, LOG_LEN, NULL, log);
-		cerr << "Error in fragment shader:\n" << log << endl;
-		exit(-1);
-	}
-
-	// Shader program
-	unsigned int shaderProg = glCreateProgram();
-	glAttachShader(shaderProg, vertShader);
-	glAttachShader(shaderProg, fragShader);
-	glLinkProgram(shaderProg);
-
-	// Check shader program
-	glGetProgramiv(shaderProg, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProg, LOG_LEN, NULL, log);
-		cerr << "Shader linking failed:\n" << log << endl;
-		exit(-1);
-	}
-	glUseProgram(shaderProg);
-
-	glDeleteShader(vertShader);
-	glDeleteShader(fragShader);
-	return shaderProg;
-}
-
 int main() {
 	cout << "Launching game...\n";
 	
@@ -133,19 +78,25 @@ int main() {
 	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 
 	// Load shaders
-	unsigned int shader = constructShaders(); // TODO: will use shader ref later
+	string vertFile = string("src/shaders/vert.glsl");
+	string fragFile = string("src/shaders/frag.glsl");
+	Shader shader(vertFile, fragFile);
+	shader.use();
 
 	// Load vertex data
 	unsigned int vao = constructTriangle(); // TODO: will use vao ref later
 
 	// Game loop
 	bool drawWireframes = false;
+	Vec3 amount(0, 0, 0);
+	const float INC = 0.01f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Do updating here
 		glfwPollEvents();
 
+		// Toggle draw mode
 		if (glfwGetKey(window, GLFW_KEY_M)) {
 			if (drawWireframes) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -154,6 +105,26 @@ int main() {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 			drawWireframes = !drawWireframes;
+		}
+
+		// Color changing
+		bool colorUpdated = false;
+		if (glfwGetKey(window, GLFW_KEY_I)) {
+			amount.x += INC;
+			colorUpdated = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_O)) {
+			amount.y += INC;
+			colorUpdated = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_P)) {
+			amount.z += INC;
+			colorUpdated = true;
+		}
+
+		if (colorUpdated) {
+			string amountName("amount");
+			shader.setVec3(amountName, amount);
 		}
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // (Triangle VAO is bound)
