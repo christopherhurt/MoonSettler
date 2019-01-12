@@ -4,46 +4,22 @@
 #include <fstream>
 #include <streambuf>
 #include <string>
-#include "core/shader.h"
+#include "shader.h"
+#include "mesh.h"
 
 using namespace std;
 
-static unsigned int constructTriangle() {
-	// Location data
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // V0
-		-0.5f,  0.5f, 0.0f, // V1
-		 0.5f,  0.5f, 0.0f, // V2
-		 0.5f, -0.5f, 0.0f  // V3
-	};
-	unsigned int indices[] = {
-		0, 1, 2, // Triangle 1
-		2, 3, 0  // Triangle 2
-	};
+static const float vertices[] = {
+	-0.5f, -0.5f, 0.0f, // V0
+	-0.5f,  0.5f, 0.0f, // V1
+	 0.5f,  0.5f, 0.0f, // V2
+	 0.5f, -0.5f, 0.0f  // V3
+};
 
-	// Vertex VAO
-	unsigned int vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	// Vertex VBO
-	unsigned int vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
-	// Element buffer object
-	unsigned int ebo;
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	
-	// Vertex attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
-
-	return vao;
-}
+static const unsigned int indices[] = {
+	0, 1, 2, // Triangle 1
+	2, 3, 0  // Triangle 2
+};
 
 int main() {
 	cout << "Launching game...\n";
@@ -74,8 +50,9 @@ int main() {
 		return -1;
 	}
 
-	// Set background color
+	// Set configurations
 	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
 
 	// Load shaders
 	string vertFile = string("src/shaders/vert.glsl");
@@ -83,8 +60,9 @@ int main() {
 	Shader shader(vertFile, fragFile);
 	shader.use();
 
-	// Load vertex data
-	unsigned int vao = constructTriangle(); // TODO: will use vao ref later
+	// Construct objects
+	Mesh mesh(vertices, 12, indices, 6);
+	mesh.bind();
 
 	// Game loop
 	bool drawWireframes = false;
@@ -127,7 +105,7 @@ int main() {
 			shader.setVec3(amountName, amount);
 		}
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // (Triangle VAO is bound)
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 	}
