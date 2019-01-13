@@ -1,10 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb_image.h>
-#include <iostream>
-#include <fstream>
-#include <streambuf>
-#include <string>
+#include "init.h"
 #include "shader.h"
 #include "gameObject.h"
 
@@ -31,49 +27,17 @@ static const unsigned int indices[] = {
 
 int main() {
 	cout << "Launching game...\n";
-	
-	// Initialize GLFW
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	// Create window
-	const int width = 800;
-	const int height = 800;
-	const char * title = "Dank memes!";
-	GLFWwindow * window = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (window == NULL) {
-		cerr << "Failed to create GLFW window\n";
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, [](GLFWwindow * window, int width, int height) { glViewport(0, 0, width, height); });
+	GLFWwindow * window = initGLFW(800, 800, "Dank memes!");
 
-	// Check GLAD loading
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		cerr << "Failed to initialize GLAD\n";
-		return -1;
-	}
-
-	// Set configurations
-	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	stbi_set_flip_vertically_on_load(true);
-	
 	// Load shaders
-	string vertFile = string("src/shaders/vert.glsl");
-	string fragFile = string("src/shaders/frag.glsl");
-	Shader shader(vertFile, fragFile);
-	shader.use();
+	Shader * shader = new Shader("src/shaders/vert.glsl", "src/shaders/frag.glsl");
+	shader->use();
 
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, 12, texCoords, 8, indices, 6);
-	string texFile("res/rip.png");
-	Texture * texture = new Texture(texFile);
-	GameObject * object = new GameObject(mesh, texture);
+	Texture * texture = new Texture("res/rip.png");
+	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
 
 	// Game loop
 	bool drawWireframes = false;
@@ -81,12 +45,11 @@ int main() {
 	const float INC = 0.01f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glfwPollEvents();
 
 		//
 		// Do updating here
 		//
-
-		glfwPollEvents();
 
 		// Toggle draw mode
 		if (glfwGetKey(window, GLFW_KEY_M)) {
@@ -115,17 +78,22 @@ int main() {
 		}
 
 		if (colorUpdated) {
-			string amountName("amount");
-			shader.setVec3(amountName, amount);
+			shader->setVec3("amount", amount);
 		}
 
 		object->render();
 
+		//
+		// End updating
+		//
+
+		// Updating screen
 		glfwSwapBuffers(window);
 	}
 
 	// Clean up resources
 	delete object;
+	delete shader;
 	glfwTerminate();
 
 	return 0;

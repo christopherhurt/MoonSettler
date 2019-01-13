@@ -1,15 +1,15 @@
 #include "texture.h"
 
-Texture::Texture(string &texFile) {
+Texture::Texture(const char * texFile) {
 	// Loading image data
 	int width;
 	int height;
 	int numChannels;
-	unsigned char * data = stbi_load(texFile.c_str(), &width, &height, &numChannels, 0);
+	unsigned char * data = stbi_load(texFile, &width, &height, &numChannels, 0);
 
 	// Checking image loading
 	if (!data) {
-		cerr << "Failed to load texture \"" << texFile.c_str() << "\"\n";
+		cerr << "Failed to load texture \"" << texFile << "\"\n";
 		exit(-1);
 	}
 

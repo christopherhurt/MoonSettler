@@ -1,6 +1,6 @@
 #include "shader.h"
 
-Shader::Shader(string &vertFile, string &fragFile) {
+Shader::Shader(const char * vertFile, const char * fragFile) {
 	// Vertex shader
 	ifstream vertStream(vertFile);
 	string vertSourceStr((istreambuf_iterator<char>(vertStream)), istreambuf_iterator<char>());
@@ -56,32 +56,32 @@ Shader::Shader(string &vertFile, string &fragFile) {
 	program = shaderProg;
 }
 
-void Shader::setVec2(string &name, float v0, float v1) {
-	glUniform2f(glGetUniformLocation(program, name.c_str()), v0, v1);
+void Shader::setVec2(const char * name, float v0, float v1) {
+	glUniform2f(glGetUniformLocation(program, name), v0, v1);
 }
 
-void Shader::setVec3(string &name, Vec3 vec) {
-	glUniform3f(glGetUniformLocation(program, name.c_str()), vec.x, vec.y, vec.z);
+void Shader::setVec3(const char * name, Vec3 &vec) {
+	glUniform3f(glGetUniformLocation(program, name), vec.x, vec.y, vec.z);
 }
 
-void Shader::setVec4(string &name, float v0, float v1, float v2, float v3) {
-	glUniform4f(glGetUniformLocation(program, name.c_str()), v0, v1, v2, v3);
+void Shader::setVec4(const char * name, float v0, float v1, float v2, float v3) {
+	glUniform4f(glGetUniformLocation(program, name), v0, v1, v2, v3);
 }
 
-void Shader::setMat4(string &name, float vals[]) {
-	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, vals);
+void Shader::setMat4(const char * name, Mat4 &mat) {
+	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE, mat.getVals());
 }
 
-void Shader::setFloat(string &name, float val) {
-	glUniform1f(glGetUniformLocation(program, name.c_str()), val);
+void Shader::setFloat(const char * name, float val) {
+	glUniform1f(glGetUniformLocation(program, name), val);
 }
 
-void Shader::setInt(string &name, int val) {
-	glUniform1i(glGetUniformLocation(program, name.c_str()), val);
+void Shader::setInt(const char * name, int val) {
+	glUniform1i(glGetUniformLocation(program, name), val);
 }
 
-void Shader::setBool(string &name, bool val) {
-	glUniform1i(glGetUniformLocation(program, name.c_str()), val);
+void Shader::setBool(const char * name, bool val) {
+	glUniform1i(glGetUniformLocation(program, name), val);
 }
 
 void Shader::use() {
