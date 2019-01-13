@@ -69,7 +69,7 @@ void Shader::setVec4(const char * name, float v0, float v1, float v2, float v3) 
 }
 
 void Shader::setMat4(const char * name, Mat4 &mat) {
-	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE, mat.getVals());
+	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_TRUE, mat.getVals());
 }
 
 void Shader::setFloat(const char * name, float val) {

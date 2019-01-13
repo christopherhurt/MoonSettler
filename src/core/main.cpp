@@ -40,9 +40,11 @@ int main() {
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
 
 	// Game loop
+	unsigned int frames = 0;
+	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	Vec3 amount(0, 0, 0);
-	const float INC = 0.01f;
+	const float MOVE_SPEED = 0.02f;
+	const float ROT_SPEED = 1.0f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
@@ -62,23 +64,24 @@ int main() {
 			drawWireframes = !drawWireframes;
 		}
 
-		// Color changing
-		bool colorUpdated = false;
-		if (glfwGetKey(window, GLFW_KEY_I)) {
-			amount.x += INC;
-			colorUpdated = true;
+		// Movement and rotation
+		if (glfwGetKey(window, GLFW_KEY_D)) {
+			object->x += MOVE_SPEED;
 		}
-		if (glfwGetKey(window, GLFW_KEY_O)) {
-			amount.y += INC;
-			colorUpdated = true;
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			object->x -= MOVE_SPEED;
 		}
-		if (glfwGetKey(window, GLFW_KEY_P)) {
-			amount.z += INC;
-			colorUpdated = true;
+		if (glfwGetKey(window, GLFW_KEY_W)) {
+			object->y += MOVE_SPEED;
 		}
-
-		if (colorUpdated) {
-			shader->setVec3("amount", amount);
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			object->y -= MOVE_SPEED;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Q)) {
+			object->rZ += ROT_SPEED;
+		}
+		if (glfwGetKey(window, GLFW_KEY_E)) {
+			object->rZ -= ROT_SPEED;
 		}
 
 		object->render();
@@ -87,6 +90,15 @@ int main() {
 		// End updating
 		//
 
+		// Print FPS
+		frames++;
+		double thisTime = glfwGetTime();
+		if (thisTime - lastTime >= 1.0) {
+			lastTime += 1.0;
+			cout << "FPS: " << frames << "\n";
+			frames = 0;
+		}
+		
 		// Updating screen
 		glfwSwapBuffers(window);
 	}
