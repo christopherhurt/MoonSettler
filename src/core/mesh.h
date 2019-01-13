@@ -7,10 +7,12 @@ class Mesh {
 public:
 	Mesh(const float vertices[], const unsigned int verticesLength, const float texCoords[], const unsigned int texCoordsLength, const unsigned int indices[], const unsigned int indicesLength);
 	void bind();
+	inline unsigned int getNumIndices() { return numIndices; }
 	~Mesh();
 private:
 	unsigned int vao;
 	unsigned int vertVbo;
 	unsigned int texVbo;
 	unsigned int indEbo;
+	unsigned int numIndices;
 };

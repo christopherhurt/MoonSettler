@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-Mesh::Mesh(const float vertices[], const unsigned int verticesLength, const float texCoords[], const unsigned int texCoordsLength, const unsigned int indices[], const unsigned int indicesLength) {
+Mesh::Mesh(const float vertices[], const unsigned int verticesLength, const float texCoords[], const unsigned int texCoordsLength, const unsigned int indices[], const unsigned int indicesLength) : numIndices(indicesLength) {
 	// Vertex VAO
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

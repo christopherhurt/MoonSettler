@@ -1,6 +1,20 @@
 #include "debug.h"
 
-void printFloatArray(const char * name, float * vals, unsigned int length) {
+void printUnsignedIntArray(const char * name, const unsigned int * vals, const unsigned int length) {
+	cout << name << ": [ ";
+
+	for (unsigned int i = 0; i < length; i++) {
+		cout << *(vals + i);
+
+		if (i != length - 1) {
+			cout << " , ";
+		}
+	}
+
+	cout << " ]\n";
+}
+
+void printFloatArray(const char * name, const float * vals, const unsigned int length) {
 	cout << name << ": [ ";
 
 	for (unsigned int i = 0; i < length; i++) {

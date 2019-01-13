@@ -8,7 +8,7 @@ void GameObject::render() {
 	mesh->bind();
 	texture->bindToUnit(0);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
 
 	unbindTexture(0);
 	unbindBuffers();
