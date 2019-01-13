@@ -6,7 +6,7 @@
 #include <streambuf>
 #include <string>
 #include "shader.h"
-#include "model.h"
+#include "gameObject.h"
 
 using namespace std;
 
@@ -73,8 +73,7 @@ int main() {
 	Mesh * mesh = new Mesh(vertices, 12, texCoords, 8, indices, 6);
 	string texFile("res/rip.png");
 	Texture * texture = new Texture(texFile);
-	Model * model = new Model(mesh, texture);
-	model->bind();
+	GameObject * object = new GameObject(mesh, texture);
 
 	// Game loop
 	bool drawWireframes = false;
@@ -120,13 +119,13 @@ int main() {
 			shader.setVec3(amountName, amount);
 		}
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Model's index elements are bound
+		object->render();
 
 		glfwSwapBuffers(window);
 	}
 
 	// Clean up resources
-	delete model;
+	delete object;
 	glfwTerminate();
 
 	return 0;
