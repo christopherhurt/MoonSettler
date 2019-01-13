@@ -7,6 +7,7 @@
 #include <string>
 #include "shader.h"
 #include "mesh.h"
+#include "texture.h"
 
 using namespace std;
 
@@ -72,6 +73,11 @@ int main() {
 	// Construct objects
 	Mesh mesh(vertices, 12, texCoords, 8, indices, 6);
 	mesh.bind();
+
+	// Load textures
+	string texFile("res/rip.png");
+	Texture texture(texFile);
+	texture.bindToUnit(0);
 
 	// Game loop
 	bool drawWireframes = false;

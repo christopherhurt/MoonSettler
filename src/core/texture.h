@@ -11,7 +11,7 @@ using namespace std;
 class Texture {
 public:
 	Texture(string &texFile);
-	void bind();
+	void bindToUnit(unsigned int unit);
 	inline unsigned int getId() { return tex; }
 	~Texture();
 private:

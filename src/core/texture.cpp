@@ -28,7 +28,8 @@ Texture::Texture(string &texFile) {
 	stbi_image_free(data);
 }
 
-void Texture::bind() {
+void Texture::bindToUnit(unsigned int unit) {
+	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, tex);
 }
 
