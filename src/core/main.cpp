@@ -14,30 +14,42 @@ static const float vertices[] = {
 	-0.5f,  0.5f, -0.5f, // V1
 	 0.5f,  0.5f, -0.5f, // V2
 	 0.5f, -0.5f, -0.5f, // V3
-	-0.5f, -0.5f,  0.5f, // V4
-	-0.5f,  0.5f,  0.5f, // V5
-	 0.5f,  0.5f,  0.5f, // V6
-	 0.5f, -0.5f,  0.5f  // V7
+	-0.5f,  0.5f,  0.5f, // V4
+	 0.5f,  0.5f,  0.5f, // V5
+	-0.5f, -0.5f,  0.5f, // V6
+	-0.5f,  0.5f,  0.5f, // V7
+	 0.5f, -0.5f,  0.5f, // V8
+	 0.5f,  0.5f,  0.5f, // V9
+	-0.5f, -0.5f,  0.5f, // V10
+	 0.5f, -0.5f,  0.5f, // V11
+	-0.5f,  0.5f,  0.5f, // V12
+	 0.5f,  0.5f,  0.5f  // V13
 };
 
 static const float texCoords[] = {
-	0.0f, 0.0f, // V0
-	0.0f, 1.0f, // V1
-	1.0f, 1.0f, // V2
-	1.0f, 0.0f, // V3
-	1.0f, 0.0f, // V4
-	1.0f, 1.0f, // V5
-	0.0f, 1.0f, // V6
-	0.0f, 0.0f  // V7
+	0.25f, 0.5f,  // V0
+	0.25f, 0.75f, // V1
+	0.5f,  0.75f, // V2
+	0.5f,  0.5f,  // V3
+	0.25f, 1.0f,  // V4
+	0.5f,  1.0f,  // V5
+	0.0f,  0.5f,  // V6
+	0.0f,  0.75f, // V7
+	0.75f, 0.5f,  // V8
+	0.75f, 0.75f, // V9
+	0.25f, 0.25f, // V10
+	0.5f,  0.25f, // V11
+	0.25f, 0.0f,  // V12
+	0.5f,  0.0f   // V13
 };
 
 static const unsigned int indices[] = {
-	0, 1, 2, 2, 3, 0, // Front
-	7, 6, 5, 5, 4, 7, // Back
-	4, 5, 1, 1, 0, 4, // Left
-	3, 2, 6, 6, 7, 3, // Right
-	1, 5, 6, 6, 2, 1, // Top
-	4, 0, 3, 3, 7, 4  // Down
+	0,  1,  2,  2,  3,  0,  // Front
+	11, 13, 12, 12, 10, 11, // Back
+	6,  7,  1,  1,  0,  6,  // Left
+	3,  2,  9,  9,  8,  3,  // Right
+	1,  4,  5,  5,  2,  1,  // Top
+	10, 0,  3,  3,  11, 10  // Down
 };
 
 int main() {
@@ -61,16 +73,16 @@ int main() {
 	Camera * cam = new Camera(pos, forward, up);
 
 	// Construct objects
-	Mesh * mesh = new Mesh(vertices, sizeof(vertices) / sizeof(float), texCoords, sizeof(texCoords) / sizeof(float), indices, sizeof(indices) / sizeof(unsigned int));
-	Texture * texture = new Texture("res/rip.png");
-	GameObject * object = new GameObject(0, 0, 5, 25, 45, 0, 1, 1, 1, mesh, texture, shader);
+	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices));
+	Texture * texture = new Texture("res/dirt.png");
+	GameObject * object = new GameObject(0, 0, 5, -45, 45, 0, 1, 1, 1, mesh, texture, shader);
 
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	const float MOVE_SPEED = 0.04f;
-	const float ROT_SPEED = 1.0f;
+	const float MOVE_SPEED = 0.08f;
+	const float ROT_SPEED = 1.75f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
