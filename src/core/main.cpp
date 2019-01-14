@@ -3,10 +3,11 @@
 #include "init.h"
 #include "shader.h"
 #include "gameObject.h"
+#include "camera.h"
 
 using namespace std;
 
-constexpr bool PRINT_FPS = false;
+constexpr bool PRINT_FPS = true;
 
 static const float vertices[] = {
 	-0.5f, -0.5f, -0.5f, // V0
@@ -53,10 +54,15 @@ int main() {
 	shader->setMat4("projection", *projectionMatrix);
 	delete projectionMatrix;
 
+	// Create camera
+	Vec3 * forward = new Vec3(0, 0, 1);
+	Vec3 * up = new Vec3(0, 1, 0);
+	Camera * cam = new Camera(0, 0, 0, forward, up);
+
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices) / sizeof(float), texCoords, sizeof(texCoords) / sizeof(float), indices, sizeof(indices) / sizeof(unsigned int));
 	Texture * texture = new Texture("res/rip.png");
-	GameObject * object = new GameObject(0, 0, 4, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
+	GameObject * object = new GameObject(0, 0, 5, 25, 45, 0, 1, 1, 1, mesh, texture, shader);
 
 	// Game loop
 	unsigned int frames = 0;
@@ -84,38 +90,40 @@ int main() {
 		}
 
 		// Movement
-		if (glfwGetKey(window, GLFW_KEY_D)) {
-			object->x += MOVE_SPEED;
-		}
-		if (glfwGetKey(window, GLFW_KEY_A)) {
-			object->x -= MOVE_SPEED;
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			cam->moveDepth(-MOVE_SPEED);
 		}
 		if (glfwGetKey(window, GLFW_KEY_W)) {
-			object->y += MOVE_SPEED;
+			cam->moveDepth(MOVE_SPEED);
 		}
-		if (glfwGetKey(window, GLFW_KEY_S)) {
-			object->y -= MOVE_SPEED;
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			cam->moveSide(-MOVE_SPEED);
 		}
-		if (glfwGetKey(window, GLFW_KEY_Z)) {
-			object->z += MOVE_SPEED;
-		}
-		if (glfwGetKey(window, GLFW_KEY_C)) {
-			object->z -= MOVE_SPEED;
-		}
-
-		// Rotation
-		if (glfwGetKey(window, GLFW_KEY_Q)) {
-			object->rY += ROT_SPEED;
-		}
-		if (glfwGetKey(window, GLFW_KEY_E)) {
-			object->rY -= ROT_SPEED;
-		}
-		if (glfwGetKey(window, GLFW_KEY_R)) {
-			object->rX += ROT_SPEED;
+		if (glfwGetKey(window, GLFW_KEY_D)) {
+			cam->moveSide(MOVE_SPEED);
 		}
 		if (glfwGetKey(window, GLFW_KEY_F)) {
-			object->rX -= ROT_SPEED;
+			cam->moveHeight(-MOVE_SPEED);
 		}
+		if (glfwGetKey(window, GLFW_KEY_R)) {
+			cam->moveHeight(MOVE_SPEED);
+		}
+		
+		// Rotation
+		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+			cam->turnHorizontal(-ROT_SPEED);
+		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+			cam->turnHorizontal(ROT_SPEED);
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN)) {
+			cam->turnVertical(-ROT_SPEED);
+		}
+		if (glfwGetKey(window, GLFW_KEY_UP)) {
+			cam->turnVertical(ROT_SPEED);
+		}
+
+		cam->updateViewMatrix(*shader);
 
 		object->render();
 
@@ -140,6 +148,7 @@ int main() {
 
 	// Clean up resources
 	delete object;
+	delete cam;
 	delete shader;
 	glfwTerminate();
 
