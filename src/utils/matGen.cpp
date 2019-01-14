@@ -72,3 +72,26 @@ Mat4 * genPerspectiveProjectionMatrix(float fov, float width, float height, floa
 
 	return perspectiveProjection;
 }
+
+Mat4 * genViewMatrix(Vec3 * pos, Vec3 * forward, Vec3 * up) {
+	Vec3 * right = forward->cross(*up);
+	float * camRotationVals = new float[16]{	right->x,   right->y,   right->z,   0,
+												up->x,      up->y,      up->z,      0,
+												forward->x, forward->y, forward->z, 0,
+												0,          0,          0,          1 };
+	Mat4 * camRotation = new Mat4(camRotationVals);
+	
+	float * camTranslationVals = new float[16]{ 1, 0, 0, -pos->x,
+												0, 1, 0, -pos->y,
+												0, 0, 1, -pos->z,
+												0, 0, 0, 1 };
+	Mat4 * camTranslation = new Mat4(camTranslationVals);
+
+	Mat4 * viewMatrix = *camRotation * *camTranslation;
+
+	delete right;
+	delete camRotation;
+	delete camTranslation;
+
+	return viewMatrix;
+}

@@ -2,6 +2,7 @@
 
 #include "math/vec3.h"
 #include "shader.h"
+#include "utils/matGen.h"
 
 class Camera {
 public:
@@ -12,6 +13,7 @@ public:
 	void turnHorizontal(float theta);
 	void turnVertical(float theta);
 	void updateViewMatrix(Shader &shader);
+	inline Vec3 * getPos() { return pos; }
 	~Camera();
 private:
 	Vec3 * pos;
