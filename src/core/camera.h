@@ -5,7 +5,7 @@
 
 class Camera {
 public:
-	Camera(float xIn, float yIn, float zIn, Vec3 * forwardIn, Vec3 * upIn);
+	Camera(Vec3 * pos, Vec3 * forwardIn, Vec3 * upIn);
 	void moveSide(float delta);
 	void moveHeight(float delta);
 	void moveDepth(float delta);
@@ -14,9 +14,7 @@ public:
 	void updateViewMatrix(Shader &shader);
 	~Camera();
 private:
-	float x;
-	float y;
-	float z;
+	Vec3 * pos;
 	Vec3 * forward;
 	Vec3 * up;
 };

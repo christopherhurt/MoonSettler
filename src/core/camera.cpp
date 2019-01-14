@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(float xIn, float yIn, float zIn, Vec3 * forwardIn, Vec3 * upIn) : x(xIn), y(yIn), z(zIn) {
+Camera::Camera(Vec3 * posIn, Vec3 * forwardIn, Vec3 * upIn) : pos(posIn) {
 	forward = forwardIn->normalize();
 	up = upIn->normalize();
 }
@@ -30,6 +30,7 @@ void Camera::updateViewMatrix(Shader &shader) {
 }
 
 Camera::~Camera() {
+	delete pos;
 	delete forward;
 	delete up;
 }

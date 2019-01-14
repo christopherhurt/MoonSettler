@@ -55,9 +55,10 @@ int main() {
 	delete projectionMatrix;
 
 	// Create camera
+	Vec3 * pos = new Vec3(0, 0, 0);
 	Vec3 * forward = new Vec3(0, 0, 1);
 	Vec3 * up = new Vec3(0, 1, 0);
-	Camera * cam = new Camera(0, 0, 0, forward, up);
+	Camera * cam = new Camera(pos, forward, up);
 
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices) / sizeof(float), texCoords, sizeof(texCoords) / sizeof(float), indices, sizeof(indices) / sizeof(unsigned int));
