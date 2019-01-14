@@ -1,6 +1,8 @@
 #pragma once
 
-#include "math.h"
+#include <math.h>
+#include "math/pi.h"
+#include "quaternion.h"
 
 class Vec3 {
 public:
@@ -12,4 +14,5 @@ public:
 	Vec3 * operator*(float val);
 	Vec3 * cross(Vec3 &vec);
 	Vec3 * normalize();
+	void rotate(Vec3 &axis, float theta);
 };

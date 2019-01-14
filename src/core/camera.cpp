@@ -38,11 +38,37 @@ void Camera::moveDepth(float delta) {
 }
 
 void Camera::turnHorizontal(float theta) {
-	// TODO
+	Vec3 * Y_AXIS = new Vec3(0, 1, 0);
+	Vec3 * horiz = Y_AXIS->cross(*forward);
+	horiz->normalize();
+
+	forward->rotate(*Y_AXIS, theta);
+	forward->normalize();
+
+	Vec3 * newUp = forward->cross(*horiz);
+	delete up;
+	up = newUp;
+	up->normalize();
+
+	delete Y_AXIS;
+	delete horiz;
 }
 
 void Camera::turnVertical(float theta) {
-	// TODO
+	Vec3 * Y_AXIS = new Vec3(0, 1, 0);
+	Vec3 * horiz = Y_AXIS->cross(*forward);
+	horiz->normalize();
+
+	forward->rotate(*horiz, theta);
+	forward->normalize();
+
+	Vec3 * newUp = forward->cross(*horiz);
+	delete up;
+	up = newUp;
+	up->normalize();
+
+	delete Y_AXIS;
+	delete horiz;
 }
 
 void Camera::updateViewMatrix(Shader &shader) {

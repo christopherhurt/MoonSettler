@@ -69,7 +69,7 @@ int main() {
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	const float MOVE_SPEED = 0.02f;
+	const float MOVE_SPEED = 0.04f;
 	const float ROT_SPEED = 1.0f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,16 +112,16 @@ int main() {
 		
 		// Rotation
 		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-			cam->turnHorizontal(-ROT_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
 			cam->turnHorizontal(ROT_SPEED);
 		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+			cam->turnHorizontal(-ROT_SPEED);
+		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN)) {
-			cam->turnVertical(-ROT_SPEED);
+			cam->turnVertical(ROT_SPEED);
 		}
 		if (glfwGetKey(window, GLFW_KEY_UP)) {
-			cam->turnVertical(ROT_SPEED);
+			cam->turnVertical(-ROT_SPEED);
 		}
 
 		cam->updateViewMatrix(*shader);
