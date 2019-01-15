@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-Mesh::Mesh(const float vertices[], const unsigned int verticesSize, const float texCoords[], const unsigned int texCoordsSize, const unsigned int indices[], const unsigned int indicesSize) {
+Mesh::Mesh(const float vertices[], const unsigned int verticesSize, const float texCoords[], const unsigned int texCoordsSize, const unsigned int indices[], const unsigned int indicesSize, bool drawStripIn) : drawStrip(drawStripIn) {
 	numIndices = indicesSize / sizeof(unsigned int);
 
 	// Vertex VAO

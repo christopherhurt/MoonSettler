@@ -1,85 +1,104 @@
 #include "terrainGen.h"
 
-constexpr unsigned int POINTS_PER_CHUNK = 4;
-constexpr unsigned int SAMPLES_PER_UNIT = 4;
-constexpr unsigned int OCTAVES = 3;
-constexpr unsigned int SAMPLES_PER_UNIT_MULTIPLIER = 2;
-constexpr unsigned int SIDE_LENGTH = POINTS_PER_CHUNK * SAMPLES_PER_UNIT - 1;
-constexpr unsigned int VERTICES_SIZE = SIDE_LENGTH * SIDE_LENGTH * 3;
-constexpr unsigned int TEX_COORDS_SIZE = SIDE_LENGTH * SIDE_LENGTH * 2;
-constexpr unsigned int INDICES_SIZE = (SIDE_LENGTH - 1) * (SIDE_LENGTH - 1) * 6;
-constexpr float CORNER_FACTOR = 0.05f;
-constexpr float EDGE_FACTOR = 0.1f;
-constexpr float CENTER_FACTOR = 1 - 4 * CORNER_FACTOR - 4 * EDGE_FACTOR;
-constexpr float AMPLITUDE_DIVISOR = 4;
-constexpr float LARGE_INC = 1.0f / (POINTS_PER_CHUNK - 1);
-constexpr float SMALL_INC = LARGE_INC / (SAMPLES_PER_UNIT - 1);
+static constexpr unsigned int POINTS_PER_SIDE = 4;
+static constexpr unsigned int SAMPLES_PER_UNIT = 16;
+static constexpr unsigned int VERTICES_PER_SIDE = POINTS_PER_SIDE + (SAMPLES_PER_UNIT - 1) * (POINTS_PER_SIDE - 1);
+static constexpr float SMALL_INC = 1 / (VERTICES_PER_SIDE - 1.0f);
+static constexpr float LARGE_INC = 1 / (POINTS_PER_SIDE - 1.0f);
 
-static float * genGrid(int chunkX, int chunkZ, unsigned long seed);
-static float calcAverageHeight(float x, float z, float inc, unsigned long seed);
+static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg, float smallInc, float largeInc, unsigned long seed);
+static float getAverageHeightAt(float x, float z, float inc, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);
-static float * genTexCoords();
-static unsigned int * genIndices();
 
+// TODO: fix
 Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
-	float * vertices = genGrid(chunkX, chunkZ, seed);
-	float * texCoords = genTexCoords();
-	unsigned int * indices = genIndices();
+	unsigned int verticesLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 3;
+	unsigned int texCoordsLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 2;
+	unsigned int indicesLength = (VERTICES_PER_SIDE - 1) * (VERTICES_PER_SIDE - 1) * 6;
 
-	Mesh * chunkMesh = new Mesh(vertices, VERTICES_SIZE * sizeof(float), texCoords, TEX_COORDS_SIZE * sizeof(float), indices, INDICES_SIZE * sizeof(unsigned int));
+	float * vertices = new float[verticesLength];
+	float * texCoords = new float[texCoordsLength];
+	unsigned int * indices = new unsigned int[indicesLength];
+
+	int index = 0;
+	for (int currZ = 0; currZ < VERTICES_PER_SIDE; currZ++) {
+		for(int currX = 0; currX < VERTICES_PER_SIDE; currX++) {
+			float texU = currX * SMALL_INC;
+			float texV = currZ * SMALL_INC;
+
+			float vertX = 1 - texU + chunkX - 0.5f;
+			float vertZ = texV + chunkZ - 0.5f;
+			
+			float vertY;
+			int offXDeg = currX % SAMPLES_PER_UNIT;
+			int offZDeg = currZ % SAMPLES_PER_UNIT;
+			if (offXDeg == 0 && offZDeg == 0) {
+				vertY = getAverageHeightAt(vertX, vertZ, LARGE_INC, seed);
+			}
+			else {
+				vertY = getInterpolatedHeightAt(vertX, vertZ, offXDeg, offZDeg, SMALL_INC, LARGE_INC, seed);
+			}
+			
+			vertices[index * 3] = vertX;
+			vertices[index * 3 + 1] = vertY;
+			vertices[index * 3 + 2] = vertZ;
+
+			texCoords[index * 2] = texU;
+			texCoords[index * 2 + 1] = texV;
+
+			index++;
+		}
+	}
+
+	index = 0;
+	for (int blockZ = 0; blockZ < VERTICES_PER_SIDE - 1; blockZ++) {
+		for (int blockX = 0; blockX < VERTICES_PER_SIDE - 1; blockX++) {
+			int bottomLeft = blockZ * VERTICES_PER_SIDE + blockX;
+			int topLeft = (blockZ + 1) * VERTICES_PER_SIDE + blockX;
+			int topRight = topLeft + 1;
+			int bottomRight = bottomLeft + 1;
+
+			indices[index++] = bottomLeft;
+			indices[index++] = topLeft;
+			indices[index++] = topRight;
+			indices[index++] = topRight;
+			indices[index++] = bottomRight;
+			indices[index++] = bottomLeft;
+		}
+	}
+
+	Mesh * mesh = new Mesh(vertices, verticesLength * sizeof(float), texCoords, texCoordsLength * sizeof(float), indices, indicesLength * sizeof(unsigned int), false);
 
 	delete[] vertices;
 	delete[] texCoords;
 	delete[] indices;
 
-	return chunkMesh;
+	return mesh;
 }
 
-static float * genGrid(int chunkX, int chunkZ, unsigned long seed) {
-	float * vertices = new float[VERTICES_SIZE];
-	float baseX = chunkX - 0.5f;
-	float baseZ = chunkZ - 0.5f;
-	
-	for (int zIndex = 0; zIndex < POINTS_PER_CHUNK; zIndex++) {
-		for (int xIndex = 0; xIndex < POINTS_PER_CHUNK; xIndex++) {
-			float floorX = baseX + xIndex * LARGE_INC;
-			float ceilX = baseX + (xIndex + 1) * LARGE_INC;
-			float floorZ = baseZ + zIndex * LARGE_INC;
-			float ceilZ = baseZ + (zIndex + 1) * LARGE_INC;
+static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg, float smallInc, float largeInc, unsigned long seed) {
+	float minX = x - offXDeg * smallInc;
+	float maxX = x + (SAMPLES_PER_UNIT - offXDeg) * smallInc;
+	float minZ = z - offZDeg * smallInc;
+	float maxZ = z + (SAMPLES_PER_UNIT - offZDeg) * smallInc;
 
-			float bottomLeftY = calcAverageHeight(floorX, floorZ, LARGE_INC, seed);
-			float bottomRightY = calcAverageHeight(ceilX, floorZ, LARGE_INC, seed);
-			float topLeftY = calcAverageHeight(floorX, ceilZ, LARGE_INC, seed);
-			float topRightY = calcAverageHeight(ceilX, ceilZ, LARGE_INC, seed);
+	float bottomLeftHeight = getAverageHeightAt(minX, minZ, largeInc, seed);
+	float bottomRightHeight = getAverageHeightAt(maxX, minZ, largeInc, seed);
+	float topLeftHeight = getAverageHeightAt(minX, maxZ, largeInc, seed);
+	float topRightHeight = getAverageHeightAt(maxX, maxZ, largeInc, seed);
 
-			for (int sampleIndexZ = 0; sampleIndexZ < SAMPLES_PER_UNIT; sampleIndexZ++) {
-				for (int sampleIndexX = 0; sampleIndexX < SAMPLES_PER_UNIT; sampleIndexX++) {
-					float x = floorX + sampleIndexX * SMALL_INC;
-					float z = floorZ + sampleIndexZ * SMALL_INC;
-					
-					float sampleOffsetX = x - floorX;
-					float sampleOffsetZ = z - floorZ;
-					float temp1 = cosineInterpolation(bottomLeftY, bottomRightY, sampleOffsetX);
-					float temp2 = cosineInterpolation(topLeftY, topRightY, sampleOffsetX);
-					float y = cosineInterpolation(temp1, temp2, sampleOffsetZ);
+	float temp1 = cosineInterpolation(bottomLeftHeight, bottomRightHeight, x - minX);
+	float temp2 = cosineInterpolation(topLeftHeight, topRightHeight, x - minX);
+	float interpolatedHeight = cosineInterpolation(temp1, temp2, z - minZ);
 
-					int vertexIndex = (zIndex * POINTS_PER_CHUNK * SAMPLES_PER_UNIT) + (xIndex * SAMPLES_PER_UNIT) + (sampleIndexZ * SAMPLES_PER_UNIT) + sampleIndexX;
-					int xOff = vertexIndex * 3;
-					int yOff = xOff + 1;
-					int zOff = xOff + 2;
-
-					*(vertices + xOff) = x;
-					*(vertices + yOff) = y;
-					*(vertices + zOff) = z;
-				}
-			}
-		}
-	}
-
-	return vertices;
+	return interpolatedHeight;
 }
 
-static float calcAverageHeight(float x, float z, float inc, unsigned long seed) {
+static float getAverageHeightAt(float x, float z, float inc, unsigned long seed) {
+	const float cornerFactor = 0.05f;
+	const float edgeFactor = 0.1f;
+	const float centerFactor = 1 - cornerFactor * 4 - edgeFactor * 4;
+
 	float bottomLeft = getHeightAt(x - inc, z - inc, seed);
 	float bottomMiddle = getHeightAt(x, z - inc, seed);
 	float bottomRight = getHeightAt(x + inc, z - inc, seed);
@@ -90,64 +109,15 @@ static float calcAverageHeight(float x, float z, float inc, unsigned long seed) 
 	float topMiddle = getHeightAt(x, z + inc, seed);
 	float topRight = getHeightAt(x + inc, z + inc, seed);
 
-	float corners = (bottomLeft + bottomRight + topLeft + topRight) * CORNER_FACTOR;
-	float edges = (bottomMiddle + middleLeft + middleRight + topMiddle) * EDGE_FACTOR;
-	float center = middleMiddle * CENTER_FACTOR;
+	float corners = (bottomLeft + bottomRight + topLeft + topRight) * cornerFactor;
+	float edges = (bottomMiddle + middleLeft + middleRight + topMiddle) * edgeFactor;
+	float center = middleMiddle * centerFactor;
 
 	return corners + edges + center;
 }
 
 static float getHeightAt(float x, float z, unsigned long seed) {
-	unsigned int pseudoSeed = (unsigned int)(x * 8934769492) + (unsigned int)(z * 6294609218) + seed;
+	int pseudoSeed = (int)(x * 9081236803) + (int)(z * 3789548901) + seed;
 	srand(pseudoSeed);
 	return (float)rand() / RAND_MAX - 0.5f;
-}
-
-static float * genTexCoords() {
-	float * texCoords = new float[TEX_COORDS_SIZE];
-
-	for (int i = 0; i < SIDE_LENGTH; i++) {
-		for (int j = 0; j < SIDE_LENGTH; j++) {
-			float u = j * SMALL_INC;
-			float v = i * SMALL_INC;
-
-			int index = i * SIDE_LENGTH + j;
-			int uOff = index * 2;
-			int vOff = uOff + 1;
-
-			*(texCoords + uOff) = u;
-			*(texCoords + vOff) = v;
-		}
-	}
-	
-	return texCoords;
-}
-
-static unsigned int * genIndices() {
-	unsigned int * indices = new unsigned int[INDICES_SIZE];
-
-	for (int i = 0; i < SIDE_LENGTH - 1; i++) {
-		for (int j = 0; j < SIDE_LENGTH - 1; j++) {
-			unsigned int index0 = i * SIDE_LENGTH + j;
-			unsigned int index1 = index0 + SIDE_LENGTH;
-			unsigned int index2 = index1 + 1;
-			unsigned int index3 = index0 + 1;
-
-			unsigned int off0 = (i * (SIDE_LENGTH - 1) + j) * 6;
-			unsigned int off1 = off0 + 1;
-			unsigned int off2 = off0 + 2;
-			unsigned int off3 = off0 + 3;
-			unsigned int off4 = off0 + 4;
-			unsigned int off5 = off0 + 5;
-
-			*(indices + off0) = index0;
-			*(indices + off1) = index1;
-			*(indices + off2) = index2;
-			*(indices + off3) = index2;
-			*(indices + off4) = index3;
-			*(indices + off5) = index0;
-		}
-	}
-
-	return indices;
 }

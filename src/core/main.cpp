@@ -75,13 +75,13 @@ int main() {
 	Camera * cam = new Camera(pos, forward, up);
 
 	// Construct objects
-	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices));
+	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
 	GameObject * object = new GameObject(0, 10, 5, -45, 45, 0, 1, 1, 1, mesh, texture, shader);
 
 	Mesh * chunk = genTerrainChunk(0, 0, rand());
 	Texture * terrainTex = new Texture("res/terrain.png");
-	GameObject * terrain = new GameObject(0, 0, 0, 0, 0, 0, 5, 3, 5, chunk, terrainTex, shader);
+	GameObject * terrain = new GameObject(0, 0, 0, 0, 0, 0, 10, 5, 10, chunk, terrainTex, shader);
 
 	// Game loop
 	unsigned int frames = 0;

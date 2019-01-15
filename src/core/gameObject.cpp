@@ -8,8 +8,13 @@ void GameObject::render() {
 	mesh->bind();
 	texture->bindToUnit(0);
 
-	glDrawElements(GL_TRIANGLES, mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
-
+	if (mesh->shouldDrawStrip()) {
+		glDrawElements(GL_TRIANGLE_STRIP, mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
+	}
+	else {
+		glDrawElements(GL_TRIANGLES, mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
+	}
+	
 	unbindTexture(0);
 	unbindBuffers();
 }
