@@ -5,7 +5,7 @@
 
 class Mesh {
 public:
-	Mesh(const float vertices[], const unsigned int verticesLength, const float texCoords[], const unsigned int texCoordsLength, const unsigned int indices[], const unsigned int indicesLength);
+	Mesh(const float vertices[], const unsigned int verticesSize, const float texCoords[], const unsigned int texCoordsSize, const unsigned int indices[], const unsigned int indicesSize);
 	void bind();
 	inline unsigned int getNumIndices() { return numIndices; }
 	~Mesh();
