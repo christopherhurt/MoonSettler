@@ -25,7 +25,7 @@ GLFWwindow * initGLFW(const unsigned int width, const unsigned int height, const
 	}
 
 	// Set configurations
-	glClearColor(0.529f, 0.808f, 0.980f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	stbi_set_flip_vertically_on_load(true);
 
