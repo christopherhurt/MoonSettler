@@ -1,47 +1,42 @@
 #include "terrainGen.h"
 
-// TODO
-#include <iostream>
-using namespace std;
+static constexpr int CHUNK_SIZE = 4;
+static constexpr int SAMPLES_PER_UNIT = 16;
+static constexpr int SIDE_LENGTH = CHUNK_SIZE + (SAMPLES_PER_UNIT - 1) * (CHUNK_SIZE - 1);
+static constexpr float INC = 1.0f / SAMPLES_PER_UNIT;
+static constexpr int OCTAVES = 4;
+static constexpr float AMPLITUDE_MULTIPLIER = 0.4f;
+static constexpr float FREQUENCY_MULTIPLIER = 2;
 
-static constexpr unsigned int POINTS_PER_SIDE = 10;
-static constexpr unsigned int SAMPLES_PER_UNIT = 20;
-static constexpr unsigned int VERTICES_PER_SIDE = POINTS_PER_SIDE + (SAMPLES_PER_UNIT - 1) * (POINTS_PER_SIDE - 1);
-static constexpr float SMALL_INC = 1 / (VERTICES_PER_SIDE - 1.0f);
-static constexpr float LARGE_INC = 1 / (POINTS_PER_SIDE - 1.0f);
-
-static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg, float smallInc, float largeInc, unsigned long seed);
-static float getAverageHeightAt(float x, float z, float inc, unsigned long seed);
+static float getInterpolatedHeightAt(float x, float z, unsigned long seed);
+static float getAverageHeightAt(float x, float z, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);
 
 Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
-	unsigned int verticesLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 3;
-	unsigned int texCoordsLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 2;
-	unsigned int indicesLength = (VERTICES_PER_SIDE - 1) * (VERTICES_PER_SIDE - 1) * 6;
+	unsigned int verticesLength = SIDE_LENGTH * SIDE_LENGTH * 3;
+	unsigned int texCoordsLength = SIDE_LENGTH * SIDE_LENGTH * 2;
+	unsigned int indicesLength = (SIDE_LENGTH - 1) * (SIDE_LENGTH - 1) * 6;
 
 	float * vertices = new float[verticesLength];
 	float * texCoords = new float[texCoordsLength];
 	unsigned int * indices = new unsigned int[indicesLength];
 
 	int index = 0;
-	for (int currZ = 0; currZ < VERTICES_PER_SIDE; currZ++) {
-		for(int currX = 0; currX < VERTICES_PER_SIDE; currX++) {
-			float texU = currX * SMALL_INC;
-			float texV = currZ * SMALL_INC;
+	for (float currZ = 0; currZ <= CHUNK_SIZE - 1; currZ += INC) {
+		for(float currX = 0; currX <= CHUNK_SIZE - 1; currX += INC) {
+			float texU = (float)currX / (CHUNK_SIZE - 1);
+			float texV = (float)currZ / (CHUNK_SIZE - 1);
 
-			float vertX = 1 - texU + chunkX - 0.5f;
-			float vertZ = texV + chunkZ - 0.5f;
-			
-			float vertY;
-			int offXDeg = currX % SAMPLES_PER_UNIT;
-			int offZDeg = currZ % SAMPLES_PER_UNIT;
-			if (offXDeg == 0 && offZDeg == 0) {
-				//cout << "Averaging..." << endl; // TODO
-				vertY = getAverageHeightAt(vertX, vertZ, LARGE_INC, seed);
-			}
-			else {
-				//cout << "Interpolating..." << endl; // TODO
-				vertY = getInterpolatedHeightAt(vertX, vertZ, SAMPLES_PER_UNIT - offXDeg, offZDeg, SMALL_INC, LARGE_INC, seed); // TODO
+			float vertX = -(float)(currX + chunkX * (CHUNK_SIZE - 1));
+			float vertZ = (float)(currZ + chunkZ * (CHUNK_SIZE - 1));
+
+			float vertY = 0;
+			float amplitude = 1;
+			float frequency = 1;
+			for (int i = 0; i < OCTAVES; i++) {
+				vertY += getInterpolatedHeightAt(vertX * frequency, vertZ * frequency, seed) * amplitude;
+				amplitude *= AMPLITUDE_MULTIPLIER;
+				frequency *= FREQUENCY_MULTIPLIER;
 			}
 			
 			vertices[index * 3] = vertX;
@@ -56,10 +51,10 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	}
 
 	index = 0;
-	for (int blockZ = 0; blockZ < VERTICES_PER_SIDE - 1; blockZ++) {
-		for (int blockX = 0; blockX < VERTICES_PER_SIDE - 1; blockX++) {
-			int bottomLeft = blockZ * VERTICES_PER_SIDE + blockX;
-			int topLeft = (blockZ + 1) * VERTICES_PER_SIDE + blockX;
+	for (int blockZ = 0; blockZ < SIDE_LENGTH - 1; blockZ++) {
+		for (int blockX = 0; blockX < SIDE_LENGTH - 1; blockX++) {
+			int bottomLeft = blockZ * SIDE_LENGTH + blockX;
+			int topLeft = (blockZ + 1) * SIDE_LENGTH + blockX;
 			int topRight = topLeft + 1;
 			int bottomRight = bottomLeft + 1;
 
@@ -81,74 +76,54 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	return mesh;
 }
 
-static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg, float smallInc, float largeInc, unsigned long seed) {
-	float minX = x - offXDeg * smallInc;
-	float maxX = x + (SAMPLES_PER_UNIT - offXDeg) * smallInc;
-	float minZ = z - offZDeg * smallInc;
-	float maxZ = z + (SAMPLES_PER_UNIT - offZDeg) * smallInc;
+static float getInterpolatedHeightAt(float x, float z, unsigned long seed) {
+	float minX = (float)floor(x);
+	float maxX = (float)ceil(x);
+	float minZ = (float)floor(z);
+	float maxZ = (float)ceil(z);
 
-	// TODO
-	/*cout << "Large inc: " << largeInc << endl;
-	cout << "Small inc: " << smallInc << endl;
-	cout << "Off X Degree: " << offXDeg << endl;
-	cout << "Off Z Degree: " << offZDeg << endl;
-	cout << "This X: " << x << endl;
-	cout << "This Z: " << z << endl;
-	cout << "Min X: " << minX << endl;
-	cout << "Max X: " << maxX << endl;
-	cout << "Min Z: " << minZ << endl;
-	cout << "Max Z: " << maxZ << endl;*/
+	float bottomLeftHeight = getAverageHeightAt(minX, minZ, seed);
+	float bottomRightHeight = getAverageHeightAt(maxX, minZ, seed);
+	float topLeftHeight = getAverageHeightAt(minX, maxZ, seed);
+	float topRightHeight = getAverageHeightAt(maxX, maxZ, seed);
 
-	float bottomLeftHeight = getAverageHeightAt(minX, minZ, largeInc, seed);
-	float bottomRightHeight = getAverageHeightAt(maxX, minZ, largeInc, seed);
-	float topLeftHeight = getAverageHeightAt(minX, maxZ, largeInc, seed);
-	float topRightHeight = getAverageHeightAt(maxX, maxZ, largeInc, seed);
+	float amtX = x - minX;
+	float amtZ = z - minZ;
 
-	// TODO
-	//cout << "Factor X: " << (x - minX) / largeInc << endl;
-	//cout << "Factor Z: " << (z - minZ) / largeInc << endl;
-
-	/*cout << "Bottom left height: " << bottomLeftHeight << endl;
-	cout << "Bottom right height: " << bottomRightHeight << endl;
-	cout << "Top left height: " << topLeftHeight << endl;
-	cout << "Top right height: " << topRightHeight << endl << endl;*/
-
-	float temp1 = cosineInterpolation(bottomLeftHeight, bottomRightHeight, (x - minX) / largeInc); // TODO: amt value
-	float temp2 = cosineInterpolation(topLeftHeight, topRightHeight, (x - minX) / largeInc);
-	float interpolatedHeight = cosineInterpolation(temp1, temp2, (z - minZ) / largeInc);
-	//float fac1 = (x - minX) / largeInc;
-	//float temp1 = bottomLeftHeight * (1 - fac1) + bottomRightHeight * fac1;
-	//float temp2 = topLeftHeight * (1 - fac1) + topRightHeight * fac1;
-	//float fac2 = (z - minZ) / largeInc;
-	//float interpolatedHeight = temp1 * (1 - fac2) + temp2 * fac2; // TODO
+	float temp1 = cosineInterpolation(bottomLeftHeight, bottomRightHeight, amtX);
+	float temp2 = cosineInterpolation(topLeftHeight, topRightHeight, amtX);
+	float interpolatedHeight = cosineInterpolation(temp1, temp2, amtZ);
 
 	return interpolatedHeight;
 }
 
-static float getAverageHeightAt(float x, float z, float inc, unsigned long seed) {
+static float getAverageHeightAt(float x, float z, unsigned long seed) {
 	const float cornerFactor = 0.05f;
 	const float edgeFactor = 0.1f;
 	const float centerFactor = 1 - cornerFactor * 4 - edgeFactor * 4;
 
-	float bottomLeft = getHeightAt(x - inc, z - inc, seed);
-	float bottomMiddle = getHeightAt(x, z - inc, seed);
-	float bottomRight = getHeightAt(x + inc, z - inc, seed);
-	float middleLeft = getHeightAt(x - inc, z, seed);
-	float middleMiddle = getHeightAt(x, z, seed);
-	float middleRight = getHeightAt(x + inc, z, seed);
-	float topLeft = getHeightAt(x - inc, z + inc, seed);
-	float topMiddle = getHeightAt(x, z + inc, seed);
-	float topRight = getHeightAt(x + inc, z + inc, seed);
+	float totalHeight = 0;
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			float currHeight = getHeightAt(x + i, z + j, seed);
 
-	float corners = (bottomLeft + bottomRight + topLeft + topRight) * cornerFactor;
-	float edges = (bottomMiddle + middleLeft + middleRight + topMiddle) * edgeFactor;
-	float center = middleMiddle * centerFactor;
+			if (i == 0 && j == 0) {
+				totalHeight += currHeight * centerFactor;
+			}
+			else if (i != 0 && j != 0) {
+				totalHeight += currHeight * cornerFactor;
+			}
+			else {
+				totalHeight += currHeight * edgeFactor;
+			}
+		}
+	}
 
-	return corners + edges + center;
+	return totalHeight;
 }
 
 static float getHeightAt(float x, float z, unsigned long seed) {
-	int pseudoSeed = (int)(x * 81383503) + (int)(z * 743854901) + seed;
+	int pseudoSeed = (int)(x * 833433) * (int)(z * 743301) + seed;
 	srand(pseudoSeed);
-	return ((float)rand() / RAND_MAX - 0.5f);
+	return (float)rand() / RAND_MAX - 0.5f;
 }

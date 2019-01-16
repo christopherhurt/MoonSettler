@@ -19,7 +19,7 @@ void GameObject::render() {
 	unbindBuffers();
 }
 
-GameObject::~GameObject() {
+GameObject::~GameObject() { // TODO: remove this? change to model?
 	delete mesh;
 	delete texture;
 }

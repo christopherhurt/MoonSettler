@@ -1,6 +1,5 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <cstdlib>
 #include "init.h"
 #include "shader.h"
 #include "gameObject.h"
@@ -77,17 +76,20 @@ int main() {
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
-	GameObject * object = new GameObject(0, 10, 5, -45, 45, 0, 1, 1, 1, mesh, texture, shader);
+	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
 
-	Mesh * chunk = genTerrainChunk(0, 0, rand());
-	Texture * terrainTex = new Texture("res/terrain.png");
-	GameObject * terrain = new GameObject(0, 0, 0, 0, 0, 0, 200, 50, 200, chunk, terrainTex, shader);
+	Mesh * chunk0 = genTerrainChunk(-1, 0, 34643);
+	Mesh * chunk1 = genTerrainChunk(0, 0, 34643);
+	Texture * terrainTex0 = new Texture("res/terrain.png");
+	Texture * terrainTex1 = new Texture("res/terrain.png");
+	GameObject * terrain0 = new GameObject(0, 0, 0, 0, 0, 0, 10, 40, 10, chunk0, terrainTex0, shader);
+	GameObject * terrain1 = new GameObject(0, 0, 0, 0, 0, 0, 10, 40, 10, chunk1, terrainTex1, shader);
 
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	const float MOVE_SPEED = 0.33f;
+	const float MOVE_SPEED = 1.0f;
 	const float ROT_SPEED = 1.75f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -145,7 +147,8 @@ int main() {
 		cam->updateViewMatrix(*shader);
 
 		object->render();
-		terrain->render();
+		terrain0->render();
+		terrain1->render();
 
 		//
 		// End updating
@@ -167,7 +170,9 @@ int main() {
 	}
 
 	// Clean up resources
-	delete object;
+	delete object; // TODO: delete shared resources independently? (e.g. textures and meshes)
+	delete terrain0;
+	delete terrain1;
 	delete cam;
 	delete shader;
 	glfwTerminate();
