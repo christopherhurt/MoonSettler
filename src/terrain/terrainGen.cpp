@@ -1,7 +1,11 @@
 #include "terrainGen.h"
 
-static constexpr unsigned int POINTS_PER_SIDE = 4;
-static constexpr unsigned int SAMPLES_PER_UNIT = 16;
+// TODO
+#include <iostream>
+using namespace std;
+
+static constexpr unsigned int POINTS_PER_SIDE = 10;
+static constexpr unsigned int SAMPLES_PER_UNIT = 20;
 static constexpr unsigned int VERTICES_PER_SIDE = POINTS_PER_SIDE + (SAMPLES_PER_UNIT - 1) * (POINTS_PER_SIDE - 1);
 static constexpr float SMALL_INC = 1 / (VERTICES_PER_SIDE - 1.0f);
 static constexpr float LARGE_INC = 1 / (POINTS_PER_SIDE - 1.0f);
@@ -10,7 +14,6 @@ static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg,
 static float getAverageHeightAt(float x, float z, float inc, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);
 
-// TODO: fix
 Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	unsigned int verticesLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 3;
 	unsigned int texCoordsLength = VERTICES_PER_SIDE * VERTICES_PER_SIDE * 2;
@@ -33,10 +36,12 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 			int offXDeg = currX % SAMPLES_PER_UNIT;
 			int offZDeg = currZ % SAMPLES_PER_UNIT;
 			if (offXDeg == 0 && offZDeg == 0) {
+				//cout << "Averaging..." << endl; // TODO
 				vertY = getAverageHeightAt(vertX, vertZ, LARGE_INC, seed);
 			}
 			else {
-				vertY = getInterpolatedHeightAt(vertX, vertZ, offXDeg, offZDeg, SMALL_INC, LARGE_INC, seed);
+				//cout << "Interpolating..." << endl; // TODO
+				vertY = getInterpolatedHeightAt(vertX, vertZ, SAMPLES_PER_UNIT - offXDeg, offZDeg, SMALL_INC, LARGE_INC, seed); // TODO
 			}
 			
 			vertices[index * 3] = vertX;
@@ -82,14 +87,40 @@ static float getInterpolatedHeightAt(float x, float z, int offXDeg, int offZDeg,
 	float minZ = z - offZDeg * smallInc;
 	float maxZ = z + (SAMPLES_PER_UNIT - offZDeg) * smallInc;
 
+	// TODO
+	/*cout << "Large inc: " << largeInc << endl;
+	cout << "Small inc: " << smallInc << endl;
+	cout << "Off X Degree: " << offXDeg << endl;
+	cout << "Off Z Degree: " << offZDeg << endl;
+	cout << "This X: " << x << endl;
+	cout << "This Z: " << z << endl;
+	cout << "Min X: " << minX << endl;
+	cout << "Max X: " << maxX << endl;
+	cout << "Min Z: " << minZ << endl;
+	cout << "Max Z: " << maxZ << endl;*/
+
 	float bottomLeftHeight = getAverageHeightAt(minX, minZ, largeInc, seed);
 	float bottomRightHeight = getAverageHeightAt(maxX, minZ, largeInc, seed);
 	float topLeftHeight = getAverageHeightAt(minX, maxZ, largeInc, seed);
 	float topRightHeight = getAverageHeightAt(maxX, maxZ, largeInc, seed);
 
-	float temp1 = cosineInterpolation(bottomLeftHeight, bottomRightHeight, x - minX);
-	float temp2 = cosineInterpolation(topLeftHeight, topRightHeight, x - minX);
-	float interpolatedHeight = cosineInterpolation(temp1, temp2, z - minZ);
+	// TODO
+	//cout << "Factor X: " << (x - minX) / largeInc << endl;
+	//cout << "Factor Z: " << (z - minZ) / largeInc << endl;
+
+	/*cout << "Bottom left height: " << bottomLeftHeight << endl;
+	cout << "Bottom right height: " << bottomRightHeight << endl;
+	cout << "Top left height: " << topLeftHeight << endl;
+	cout << "Top right height: " << topRightHeight << endl << endl;*/
+
+	float temp1 = cosineInterpolation(bottomLeftHeight, bottomRightHeight, (x - minX) / largeInc); // TODO: amt value
+	float temp2 = cosineInterpolation(topLeftHeight, topRightHeight, (x - minX) / largeInc);
+	float interpolatedHeight = cosineInterpolation(temp1, temp2, (z - minZ) / largeInc);
+	//float fac1 = (x - minX) / largeInc;
+	//float temp1 = bottomLeftHeight * (1 - fac1) + bottomRightHeight * fac1;
+	//float temp2 = topLeftHeight * (1 - fac1) + topRightHeight * fac1;
+	//float fac2 = (z - minZ) / largeInc;
+	//float interpolatedHeight = temp1 * (1 - fac2) + temp2 * fac2; // TODO
 
 	return interpolatedHeight;
 }
@@ -117,7 +148,7 @@ static float getAverageHeightAt(float x, float z, float inc, unsigned long seed)
 }
 
 static float getHeightAt(float x, float z, unsigned long seed) {
-	int pseudoSeed = (int)(x * 9081236803) + (int)(z * 3789548901) + seed;
+	int pseudoSeed = (int)(x * 81383503) + (int)(z * 743854901) + seed;
 	srand(pseudoSeed);
-	return (float)rand() / RAND_MAX - 0.5f;
+	return ((float)rand() / RAND_MAX - 0.5f);
 }

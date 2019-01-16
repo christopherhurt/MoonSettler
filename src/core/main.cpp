@@ -9,7 +9,7 @@
 
 using namespace std;
 
-constexpr bool PRINT_FPS = true;
+constexpr bool PRINT_FPS = false;
 
 static const float vertices[] = {
 	-0.5f, -0.5f, -0.5f, // V0
@@ -81,13 +81,13 @@ int main() {
 
 	Mesh * chunk = genTerrainChunk(0, 0, rand());
 	Texture * terrainTex = new Texture("res/terrain.png");
-	GameObject * terrain = new GameObject(0, 0, 0, 0, 0, 0, 10, 5, 10, chunk, terrainTex, shader);
+	GameObject * terrain = new GameObject(0, 0, 0, 0, 0, 0, 200, 50, 200, chunk, terrainTex, shader);
 
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	const float MOVE_SPEED = 0.08f;
+	const float MOVE_SPEED = 0.33f;
 	const float ROT_SPEED = 1.75f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
