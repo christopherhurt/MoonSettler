@@ -27,7 +27,6 @@ public:
 						x(xIn), y(yIn), z(zIn), rX(rXIn), rY(rYIn), rZ(rZIn), sX(sXIn), sY(sYIn), sZ(sZIn),
 						mesh(meshIn), texture(textureIn), shader(shaderIn) {}
 	void render();
-	~GameObject();
 private:
 	Mesh * mesh;
 	Texture * texture;

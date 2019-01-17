@@ -1,13 +1,5 @@
 #include "terrainGen.h"
 
-static constexpr int CHUNK_SIZE = 4;
-static constexpr int SAMPLES_PER_UNIT = 16;
-static constexpr int SIDE_LENGTH = CHUNK_SIZE + (SAMPLES_PER_UNIT - 1) * (CHUNK_SIZE - 1);
-static constexpr float INC = 1.0f / SAMPLES_PER_UNIT;
-static constexpr int OCTAVES = 4;
-static constexpr float AMPLITUDE_MULTIPLIER = 0.4f;
-static constexpr float FREQUENCY_MULTIPLIER = 2;
-
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed);
 static float getAverageHeightAt(float x, float z, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);

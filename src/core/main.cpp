@@ -4,7 +4,7 @@
 #include "shader.h"
 #include "gameObject.h"
 #include "camera.h"
-#include "terrain/terrainGen.h"
+#include "terrain/terrain.h"
 
 using namespace std;
 
@@ -78,12 +78,8 @@ int main() {
 	Texture * texture = new Texture("res/dirt.png");
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
 
-	Mesh * chunk0 = genTerrainChunk(-1, 0, 34643);
-	Mesh * chunk1 = genTerrainChunk(0, 0, 34643);
-	Texture * terrainTex0 = new Texture("res/terrain.png");
-	Texture * terrainTex1 = new Texture("res/terrain.png");
-	GameObject * terrain0 = new GameObject(0, 0, 0, 0, 0, 0, 10, 40, 10, chunk0, terrainTex0, shader);
-	GameObject * terrain1 = new GameObject(0, 0, 0, 0, 0, 0, 10, 40, 10, chunk1, terrainTex1, shader);
+	Texture * terrainTex = new Texture("res/terrain.png");
+	Terrain * terrain = new Terrain(50, 200, shader, cam, terrainTex, 234523);
 
 	// Game loop
 	unsigned int frames = 0;
@@ -146,9 +142,8 @@ int main() {
 
 		cam->updateViewMatrix(*shader);
 
+		terrain->updateAndRender();
 		object->render();
-		terrain0->render();
-		terrain1->render();
 
 		//
 		// End updating
@@ -170,9 +165,10 @@ int main() {
 	}
 
 	// Clean up resources
-	delete object; // TODO: delete shared resources independently? (e.g. textures and meshes)
-	delete terrain0;
-	delete terrain1;
+	delete object;
+	delete mesh;
+	delete texture;
+	delete terrain;
 	delete cam;
 	delete shader;
 	glfwTerminate();
