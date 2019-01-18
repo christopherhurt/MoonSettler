@@ -1,15 +1,16 @@
 #pragma once
 
 #include "texture.h"
+#include "core/shader.h"
 
 class Material {
 public:
-	Material(Texture * textureIn, float ambientIn, float diffuseIn, float specularIn, int shininessIn);
-	void loadAndBind();
-	inline void bindNormalMap(Texture * normalMapIn) { normalMap = normalMapIn; }
-	inline ~Material() { delete texture; }
+	Material(Texture * diffuseMapIn, float ambientIn, float diffuseIn, float specularIn, int shininessIn);
+	void loadAndBind(Shader &shader);
+	inline void attachNormalMap(Texture * normalMapIn) { normalMap = normalMapIn; }
+	inline ~Material() { delete diffuseMap; delete normalMap; }
 private:
-	Texture * texture;
+	Texture * diffuseMap;
 	Texture * normalMap;
 	float ambient;
 	float diffuse;

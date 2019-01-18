@@ -44,6 +44,10 @@ static const float texCoords[] = {
 	0.5f,  0.0f   // V13
 };
 
+static const float normals[] = {
+	0 // TODO
+};
+
 static const unsigned int indices[] = {
 	0,  1,  2,  2,  3,  0,  // Front
 	11, 13, 12, 12, 10, 11, // Back
@@ -76,7 +80,8 @@ int main() {
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
-	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, texture, shader);
+	Material * material = new Material(texture, 0.2f, 0.5f, 0.3f, 4);
+	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Texture * terrainTex = new Texture("res/terrain.png");
 	Terrain * terrain = new Terrain(50, 200, shader, cam, terrainTex, 234523);
@@ -142,7 +147,7 @@ int main() {
 
 		cam->updateViewMatrix(*shader);
 
-		terrain->updateAndRender();
+		//terrain->updateAndRender();
 		object->render();
 
 		//
@@ -167,7 +172,7 @@ int main() {
 	// Clean up resources
 	delete object;
 	delete mesh;
-	delete texture;
+	delete material;
 	delete terrain;
 	delete cam;
 	delete shader;

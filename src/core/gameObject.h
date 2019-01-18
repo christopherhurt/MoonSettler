@@ -1,14 +1,14 @@
 #pragma once
 
 #include "mesh.h"
-#include "texture.h"
+#include "material.h"
 #include "utils/unbind.h"
 #include "shader.h"
 #include "utils/matGen.h"
 
 using namespace std;
 
-class GameObject { // TODO: replace texture with material
+class GameObject {
 public:
 	float x;
 	float y;
@@ -23,12 +23,12 @@ public:
 	inline GameObject(	float xIn, float yIn, float zIn,
 						float rXIn, float rYIn, float rZIn,
 						float sXIn, float sYIn, float sZIn,
-						Mesh * meshIn, Texture * textureIn, Shader * shaderIn) :
+						Mesh * meshIn, Material * materialIn, Shader * shaderIn) :
 						x(xIn), y(yIn), z(zIn), rX(rXIn), rY(rYIn), rZ(rZIn), sX(sXIn), sY(sYIn), sZ(sZIn),
-						mesh(meshIn), texture(textureIn), shader(shaderIn) {}
+						mesh(meshIn), material(materialIn), shader(shaderIn) {}
 	void render();
 private:
 	Mesh * mesh;
-	Texture * texture;
+	Material * material;
 	Shader * shader;
 };

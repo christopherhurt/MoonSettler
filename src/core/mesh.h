@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class Mesh {
+class Mesh { // TODO: add normals
 public:
 	Mesh(const float vertices[], const unsigned int verticesSize, const float texCoords[], const unsigned int texCoordsSize, const unsigned int indices[], const unsigned int indicesSize, bool drawStripIn);
 	void bind();

@@ -6,7 +6,7 @@ void GameObject::render() {
 	delete mat;
 
 	mesh->bind();
-	texture->bindToUnit(0);
+	material->loadAndBind(*shader);
 
 	if (mesh->shouldDrawStrip()) {
 		glDrawElements(GL_TRIANGLE_STRIP, mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
