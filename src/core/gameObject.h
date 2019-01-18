@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class GameObject {
+class GameObject { // TODO: replace texture with material
 public:
 	float x;
 	float y;
