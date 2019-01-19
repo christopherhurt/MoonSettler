@@ -59,7 +59,8 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 		}
 	}
 
-	Mesh * mesh = new Mesh(vertices, verticesLength * sizeof(float), texCoords, texCoordsLength * sizeof(float), indices, indicesLength * sizeof(unsigned int), false);
+	// TODO: calculate and add normals to mesh
+	Mesh * mesh = new Mesh(vertices, verticesLength * sizeof(float), texCoords, texCoordsLength * sizeof(float), nullptr, 0, indices, indicesLength * sizeof(unsigned int), false);
 
 	delete[] vertices;
 	delete[] texCoords;

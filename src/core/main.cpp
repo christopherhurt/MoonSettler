@@ -10,7 +10,7 @@ using namespace std;
 
 constexpr bool PRINT_FPS = false;
 
-static const float vertices[] = {
+static const float vertices[] = { // TODO: update for flat shading (independent vertices for each side)
 	-0.5f, -0.5f, -0.5f, // V0
 	-0.5f,  0.5f, -0.5f, // V1
 	 0.5f,  0.5f, -0.5f, // V2
@@ -78,7 +78,7 @@ int main() {
 	Camera * cam = new Camera(pos, forward, up);
 
 	// Construct objects
-	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), indices, sizeof(indices), false);
+	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), normals, sizeof(normals), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
 	Material * material = new Material(texture, 0.2f, 0.5f, 0.3f, 4);
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);

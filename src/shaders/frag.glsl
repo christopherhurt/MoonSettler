@@ -6,12 +6,10 @@ out vec4 outColor;
 
 struct Material {
 	sampler2D diffuseMap;
-	sampler2D normalMap;
 	float ambient;
 	float diffuse;
 	float specular;
 	int shininess;
-	int usingNormalMap;
 };
 
 struct Light {
