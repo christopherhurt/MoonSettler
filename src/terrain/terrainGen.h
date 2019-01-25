@@ -4,6 +4,7 @@
 #include <math.h>
 #include "core/mesh.h"
 #include "utils/interpolation.h"
+#include "math/vec3.h"
 
 constexpr int CHUNK_SIZE = 4;
 constexpr int SAMPLES_PER_UNIT = 8;

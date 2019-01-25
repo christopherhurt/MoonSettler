@@ -1,5 +1,7 @@
 #include "terrainGen.h"
 
+static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed);
+static float getCompositeHeightAt(float x, float z, unsigned long seed);
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed);
 static float getAverageHeightAt(float x, float z, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);
@@ -23,24 +25,17 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 
 			float vertX = (float)(currX + chunkX * (CHUNK_SIZE - 1));
 			float vertZ = (float)(currZ + chunkZ * (CHUNK_SIZE - 1));
-
-			float vertY = 0;
-			float amplitude = 1;
-			float frequency = 1;
-			for (int i = 0; i < OCTAVES; i++) {
-				vertY += getInterpolatedHeightAt(vertX * frequency, vertZ * frequency, seed) * amplitude;
-				amplitude *= AMPLITUDE_MULTIPLIER;
-				frequency *= FREQUENCY_MULTIPLIER;
-			}
+			float vertY = getCompositeHeightAt(vertX, vertZ, seed);
 			
 			vertices[index * 3] = vertX;
 			vertices[index * 3 + 1] = vertY;
 			vertices[index * 3 + 2] = vertZ;
 
-			// TODO: change these
-			normals[index * 3] = 0;
-			normals[index * 3 + 1] = 1;
-			normals[index * 3 + 2] = 0;
+			Vec3 * normal = getNormalVectorAt(vertX, vertZ, seed);
+			normals[index * 3] = normal->x;
+			normals[index * 3 + 1] = normal->y;
+			normals[index * 3 + 2] = normal->z;
+			delete normal;
 
 			texCoords[index * 2] = texU;
 			texCoords[index * 2 + 1] = texV;
@@ -74,6 +69,31 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	delete[] indices;
 
 	return mesh;
+}
+
+static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed) {
+	float leftHeight = getCompositeHeightAt(x - 1, z, seed);
+	float rightHeight = getCompositeHeightAt(x + 1, z, seed);
+	float bottomHeight = getCompositeHeightAt(x, z - 1, seed);
+	float topHeight = getCompositeHeightAt(x, z + 1, seed);
+
+	Vec3 * normal = new Vec3(leftHeight - rightHeight, 2.0f, bottomHeight - topHeight);
+	normal->normalize();
+
+	return normal;
+}
+
+static float getCompositeHeightAt(float x, float z, unsigned long seed) {
+	float height = 0;
+	float amplitude = 1;
+	float frequency = 1;
+	for (int i = 0; i < OCTAVES; i++) {
+		height += getInterpolatedHeightAt(x * frequency, z * frequency, seed) * amplitude;
+		amplitude *= AMPLITUDE_MULTIPLIER;
+		frequency *= FREQUENCY_MULTIPLIER;
+	}
+
+	return height;
 }
 
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed) {

@@ -8,7 +8,7 @@
 #include "core/material.h"
 
 constexpr int CHUNK_WIDTH = CHUNK_SIZE - 1;
-constexpr int VIEW_DISTANCE = 3;
+constexpr int VIEW_DISTANCE = 2;
 constexpr int MAX_CHUNKS_LOADED = 1000;
 
 class Terrain {

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-constexpr bool PRINT_FPS = false;
+constexpr bool PRINT_FPS = true;
 
 static const float vertices[] = {
 	-0.5f, -0.5f, -0.5f, // V0
@@ -123,12 +123,10 @@ int main() {
 	Camera * cam = new Camera(pos, forward, up);
 
 	// Add lights
-	Vec3 lightColor(1.0f, 1.0f, 1.0f);
-	Vec3 direction(-0.5f, -1.0f, 0.0f);
-	Light * directionalLight = new DirectionalLight(&lightColor, 1.0f, &direction);
-	directionalLight->load(*shader);
-	delete directionalLight;
-
+	Vec3 * lightColor = new Vec3(1.0f, 1.0f, 1.0f);
+	Vec3 * direction = new Vec3(0.0f, -1.0f, 0.0f);
+	DirectionalLight * directionalLight = new DirectionalLight(lightColor, 1.0f, direction);
+	
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), normals, sizeof(normals), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
@@ -136,7 +134,7 @@ int main() {
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Texture * terrainTex = new Texture("res/terrain.png");
-	Material * terrainMaterial = new Material(terrainTex, 0.25f, 0.75f, 0.25f, 8);
+	Material * terrainMaterial = new Material(terrainTex, 0.1f, 0.6f, 0.0f, 32);
 	Terrain * terrain = new Terrain(10, 40, shader, cam, terrainMaterial, 234523);
 
 	// Game loop
@@ -185,21 +183,32 @@ int main() {
 		}
 		
 		// Rotation
-		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+		bool leftHeld = glfwGetKey(window, GLFW_KEY_LEFT);
+		bool rightHeld = glfwGetKey(window, GLFW_KEY_RIGHT);
+		bool downHeld = glfwGetKey(window, GLFW_KEY_DOWN);
+		bool upHeld = glfwGetKey(window, GLFW_KEY_UP);
+		if (leftHeld && !rightHeld) {
 			cam->turnHorizontal(ROT_SPEED);
 		}
-		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+		if (rightHeld && !leftHeld) {
 			cam->turnHorizontal(-ROT_SPEED);
 		}
-		if (glfwGetKey(window, GLFW_KEY_DOWN)) {
+		if (downHeld && !upHeld) {
 			cam->turnVertical(ROT_SPEED);
 		}
-		if (glfwGetKey(window, GLFW_KEY_UP)) {
+		if (upHeld && !downHeld) {
 			cam->turnVertical(-ROT_SPEED);
 		}
 
 		cam->update(*shader);
 
+		// Lighting
+		Vec3 * lightDir = directionalLight->getDirection();
+		lightDir->x = (float)cos(glfwGetTime());
+		lightDir->z = (float)sin(glfwGetTime());
+		directionalLight->load(*shader);
+
+		// Render objects (last)
 		terrain->updateAndRender();
 		object->render();
 
@@ -228,6 +237,7 @@ int main() {
 	delete material;
 	delete terrain;
 	delete cam;
+	delete directionalLight;
 	delete shader;
 	glfwTerminate();
 

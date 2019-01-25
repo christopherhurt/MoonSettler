@@ -10,7 +10,7 @@ void Terrain::updateAndRender() {
 	material->loadAndBind(*shader);
 	Vec3 * playerPos = cam->getPos();
 	
-	int playerChunkX = (int)floor(-playerPos->x / scale / CHUNK_WIDTH);
+	int playerChunkX = (int)floor(playerPos->x / scale / CHUNK_WIDTH);
 	int playerChunkZ = (int)floor(playerPos->z / scale / CHUNK_WIDTH);
 
 	int minChunkX = playerChunkX - VIEW_DISTANCE;
