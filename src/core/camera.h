@@ -12,7 +12,7 @@ public:
 	void moveDepth(float delta);
 	void turnHorizontal(float theta);
 	void turnVertical(float theta);
-	void updateViewMatrix(Shader &shader);
+	void update(Shader &shader);
 	inline Vec3 * getPos() { return pos; }
 	~Camera();
 private:

@@ -5,26 +5,38 @@
 #include "gameObject.h"
 #include "camera.h"
 #include "terrain/terrain.h"
+#include "lights/light.h"
+#include "lights/directionalLight.h"
 
 using namespace std;
 
 constexpr bool PRINT_FPS = false;
 
-static const float vertices[] = { // TODO: update for flat shading (independent vertices for each side)
+static const float vertices[] = {
 	-0.5f, -0.5f, -0.5f, // V0
 	-0.5f,  0.5f, -0.5f, // V1
 	 0.5f,  0.5f, -0.5f, // V2
 	 0.5f, -0.5f, -0.5f, // V3
-	-0.5f,  0.5f,  0.5f, // V4
+	 0.5f, -0.5f,  0.5f, // V4
 	 0.5f,  0.5f,  0.5f, // V5
-	-0.5f, -0.5f,  0.5f, // V6
-	-0.5f,  0.5f,  0.5f, // V7
-	 0.5f, -0.5f,  0.5f, // V8
-	 0.5f,  0.5f,  0.5f, // V9
-	-0.5f, -0.5f,  0.5f, // V10
-	 0.5f, -0.5f,  0.5f, // V11
-	-0.5f,  0.5f,  0.5f, // V12
-	 0.5f,  0.5f,  0.5f  // V13
+	-0.5f,  0.5f,  0.5f, // V6
+	-0.5f, -0.5f,  0.5f, // V7
+	-0.5f, -0.5f,  0.5f, // V8
+	-0.5f,  0.5f,  0.5f, // V9
+	-0.5f,  0.5f, -0.5f, // V10
+	-0.5f, -0.5f, -0.5f, // V11
+	 0.5f, -0.5f, -0.5f, // V12
+	 0.5f,  0.5f, -0.5f, // V13
+	 0.5f,  0.5f,  0.5f, // V14
+	 0.5f, -0.5f,  0.5f, // V15
+	-0.5f,  0.5f, -0.5f, // V16
+	-0.5f,  0.5f,  0.5f, // V17
+	 0.5f,  0.5f,  0.5f, // V18
+	 0.5f,  0.5f, -0.5f, // V19
+	-0.5f, -0.5f,  0.5f, // V20
+	-0.5f, -0.5f, -0.5f, // V21
+	 0.5f, -0.5f, -0.5f, // V22
+	 0.5f, -0.5f,  0.5f  // V23
 };
 
 static const float texCoords[] = {
@@ -32,29 +44,62 @@ static const float texCoords[] = {
 	0.25f, 0.75f, // V1
 	0.5f,  0.75f, // V2
 	0.5f,  0.5f,  // V3
-	0.25f, 1.0f,  // V4
-	0.5f,  1.0f,  // V5
-	0.0f,  0.5f,  // V6
-	0.0f,  0.75f, // V7
-	0.75f, 0.5f,  // V8
-	0.75f, 0.75f, // V9
-	0.25f, 0.25f, // V10
-	0.5f,  0.25f, // V11
-	0.25f, 0.0f,  // V12
-	0.5f,  0.0f   // V13
+	0.5f,  0.25f, // V4
+	0.5f,  0.0f,  // V5
+	0.25f, 0.0f,  // V6
+	0.25f, 0.25f, // V7
+	0.0f,  0.5f,  // V8
+	0.0f,  0.75f, // V9
+	0.25f, 0.75f, // V10
+	0.25f, 0.5f,  // V11
+	0.5f,  0.5f,  // V12
+	0.5f,  0.75f, // V13
+	0.75f, 0.75f, // V14
+	0.75f, 0.5f,  // V15
+	0.25f, 0.75f, // V16
+	0.25f, 1.0f,  // V17
+	0.5f,  1.0f,  // V18
+	0.5f,  0.75f, // V19
+	0.25f, 0.25f, // V20
+	0.25f, 0.5f,  // V21
+	0.5f,  0.5f,  // V22
+	0.5f,  0.25f  // V23
 };
 
 static const float normals[] = {
-	0 // TODO
+	 0,  0, -1, // V0
+	 0,  0, -1, // V1
+	 0,  0, -1, // V2
+	 0,  0, -1, // V3
+	 0,  0,  1, // V4
+	 0,  0,  1, // V5
+	 0,  0,  1, // V6
+	 0,  0,  1, // V7
+	-1,  0,  0, // V8
+	-1,  0,  0, // V9
+	-1,  0,  0, // V10
+	-1,  0,  0, // V11
+	 1,  0,  0, // V12
+	 1,  0,  0, // V13
+	 1,  0,  0, // V14
+	 1,  0,  0, // V15
+	 0,  1,  0, // V16
+	 0,  1,  0, // V17
+	 0,  1,  0, // V18
+	 0,  1,  0, // V19
+	 0, -1,  0, // V20
+	 0, -1,  0, // V21
+	 0, -1,  0, // V22
+	 0, -1,  0  // V23
 };
 
 static const unsigned int indices[] = {
 	0,  1,  2,  2,  3,  0,  // Front
-	11, 13, 12, 12, 10, 11, // Back
-	6,  7,  1,  1,  0,  6,  // Left
-	3,  2,  9,  9,  8,  3,  // Right
-	1,  4,  5,  5,  2,  1,  // Top
-	10, 0,  3,  3,  11, 10  // Down
+	4,  5,  6,  6,  7,  4,  // Back
+	8,  9,  10, 10, 11, 8,  // Left
+	12, 13, 14, 14, 15, 12, // Right
+	16, 17, 18, 18, 19, 16, // Top
+	20, 21, 22, 22, 23, 20  // Down
 };
 
 int main() {
@@ -77,21 +122,29 @@ int main() {
 	Vec3 * up = new Vec3(0, 1, 0);
 	Camera * cam = new Camera(pos, forward, up);
 
+	// Add lights
+	Vec3 lightColor(1.0f, 1.0f, 1.0f);
+	Vec3 direction(-0.5f, -1.0f, 0.0f);
+	Light * directionalLight = new DirectionalLight(&lightColor, 1.0f, &direction);
+	directionalLight->load(*shader);
+	delete directionalLight;
+
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), normals, sizeof(normals), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
-	Material * material = new Material(texture, 0.2f, 0.5f, 0.3f, 4);
+	Material * material = new Material(texture, 0.2f, 0.5f, 0.2f, 8);
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Texture * terrainTex = new Texture("res/terrain.png");
-	Terrain * terrain = new Terrain(50, 200, shader, cam, terrainTex, 234523);
+	Material * terrainMaterial = new Material(terrainTex, 0.25f, 0.3f, 0.2f, 4);
+	Terrain * terrain = new Terrain(10, 40, shader, cam, terrainMaterial, 234523);
 
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
 	bool drawWireframes = false;
-	const float MOVE_SPEED = 1.0f;
-	const float ROT_SPEED = 1.75f;
+	const float MOVE_SPEED = 0.1f;
+	const float ROT_SPEED = 3.0f;
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
@@ -145,7 +198,7 @@ int main() {
 			cam->turnVertical(-ROT_SPEED);
 		}
 
-		cam->updateViewMatrix(*shader);
+		cam->update(*shader);
 
 		//terrain->updateAndRender();
 		object->render();

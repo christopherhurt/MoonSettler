@@ -13,6 +13,7 @@ GLFWwindow * initGLFW(const unsigned int width, const unsigned int height, const
 	if (window == NULL) {
 		cerr << "Failed to create GLFW window\n";
 		glfwTerminate();
+		system("pause");
 		exit(-1);
 	}
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow * window, int width, int height) { glViewport(0, 0, width, height); });
@@ -21,6 +22,7 @@ GLFWwindow * initGLFW(const unsigned int width, const unsigned int height, const
 	// Check GLAD loading
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		cerr << "Failed to initialize GLAD\n";
+		system("pause");
 		exit(-1);
 	}
 

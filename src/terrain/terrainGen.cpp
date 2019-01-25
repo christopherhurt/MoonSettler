@@ -7,10 +7,12 @@ static float getHeightAt(float x, float z, unsigned long seed);
 Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	unsigned int verticesLength = SIDE_LENGTH * SIDE_LENGTH * 3;
 	unsigned int texCoordsLength = SIDE_LENGTH * SIDE_LENGTH * 2;
+	unsigned int normalsLength = verticesLength;
 	unsigned int indicesLength = (SIDE_LENGTH - 1) * (SIDE_LENGTH - 1) * 6;
 
 	float * vertices = new float[verticesLength];
 	float * texCoords = new float[texCoordsLength];
+	float * normals = new float[normalsLength];
 	unsigned int * indices = new unsigned int[indicesLength];
 
 	int index = 0;
@@ -34,6 +36,11 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 			vertices[index * 3] = vertX;
 			vertices[index * 3 + 1] = vertY;
 			vertices[index * 3 + 2] = vertZ;
+
+			// TODO: change these
+			normals[index * 3] = 0;
+			normals[index * 3 + 1] = 1;
+			normals[index * 3 + 2] = 0;
 
 			texCoords[index * 2] = texU;
 			texCoords[index * 2 + 1] = texV;
@@ -60,10 +67,11 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	}
 
 	// TODO: calculate and add normals to mesh
-	Mesh * mesh = new Mesh(vertices, verticesLength * sizeof(float), texCoords, texCoordsLength * sizeof(float), nullptr, 0, indices, indicesLength * sizeof(unsigned int), false);
+	Mesh * mesh = new Mesh(vertices, verticesLength * sizeof(float), texCoords, texCoordsLength * sizeof(float), normals, normalsLength * sizeof(float), indices, indicesLength * sizeof(unsigned int), false);
 
 	delete[] vertices;
 	delete[] texCoords;
+	delete[] normals;
 	delete[] indices;
 
 	return mesh;

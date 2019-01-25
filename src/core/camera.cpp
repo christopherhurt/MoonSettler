@@ -7,7 +7,7 @@ Camera::Camera(Vec3 * posIn, Vec3 * forwardIn, Vec3 * upIn) : pos(posIn) {
 
 void Camera::moveSide(float delta) {
 	Vec3 * right = forward->cross(*up);
-	Vec3 * scaledRight = *right * delta;
+	Vec3 * scaledRight = *right * -delta;
 	Vec3 * newPos = *pos + *scaledRight;
 
 	delete pos;
@@ -42,7 +42,7 @@ void Camera::turnHorizontal(float theta) {
 	Vec3 * horiz = Y_AXIS->cross(*forward);
 	horiz->normalize();
 
-	forward->rotate(*Y_AXIS, theta);
+	forward->rotate(*Y_AXIS, -theta);
 	forward->normalize();
 
 	Vec3 * newUp = forward->cross(*horiz);
@@ -71,10 +71,12 @@ void Camera::turnVertical(float theta) {
 	delete horiz;
 }
 
-void Camera::updateViewMatrix(Shader &shader) {
+void Camera::update(Shader &shader) {
 	Mat4 * viewMatrix = genViewMatrix(pos, forward, up);
 	shader.setMat4("view", *viewMatrix);
 	delete viewMatrix;
+
+	shader.setVec3("camLoc", *getPos());
 }
 
 Camera::~Camera() {

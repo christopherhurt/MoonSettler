@@ -2,12 +2,12 @@
 
 static Chunk * getChunkAt(int x, int z, list<Chunk *> * chunks);
 
-Terrain::Terrain(float scaleIn, float amplitudeIn, Shader * shaderIn, Camera * camIn, Texture * textureIn, unsigned long seedIn) : scale(scaleIn), amplitude(amplitudeIn), shader(shaderIn), cam(camIn), texture(textureIn), seed(seedIn) {
+Terrain::Terrain(float scaleIn, float amplitudeIn, Shader * shaderIn, Camera * camIn, Material * materialIn, unsigned long seedIn) : scale(scaleIn), amplitude(amplitudeIn), shader(shaderIn), cam(camIn), material(materialIn), seed(seedIn) {
 	chunks = new list<Chunk *>();
 }
 
 void Terrain::updateAndRender() {
-	texture->bindToUnit(0);
+	material->loadAndBind(*shader);
 	Vec3 * playerPos = cam->getPos();
 	
 	int playerChunkX = (int)floor(-playerPos->x / scale / CHUNK_WIDTH);
@@ -39,7 +39,7 @@ void Terrain::updateAndRender() {
 }
 
 Terrain::~Terrain() {
-	delete texture;
+	delete material;
 	delete chunks;
 }
 

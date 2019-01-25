@@ -10,6 +10,7 @@ Texture::Texture(const char * texFile) {
 	// Checking image loading
 	if (!data) {
 		cerr << "Failed to load texture \"" << texFile << "\"\n";
+		system("pause");
 		exit(-1);
 	}
 

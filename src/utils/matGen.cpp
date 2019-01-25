@@ -64,10 +64,10 @@ Mat4 * genPerspectiveProjectionMatrix(float fov, float width, float height, floa
 	float tanHalfFov = (float)tan(fovRad / 2);
 	float zRange = zNear - zFar;
 
-	float * vals = new float[16] {	1.0f / (tanHalfFov * ar), 0,                 0,                        0,
-									0,                        1.0f / tanHalfFov, 0,                        0,
-									0,                        0,                 (-zNear - zFar) / zRange, 2 * zFar * zNear / zRange,
-									0,                        0,                 1,                        0 };
+	float * vals = new float[16] {	 -1.0f / (tanHalfFov * ar), 0,                 0,                        0,
+									  0,                        1.0f / tanHalfFov, 0,                        0,
+									  0,                        0,                 -(zNear + zFar) / zRange, 2 * zFar * zNear / zRange,
+									  0,                        0,                 1,                        0 };
 	Mat4 * perspectiveProjection = new Mat4(vals);
 
 	return perspectiveProjection;

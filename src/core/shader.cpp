@@ -17,6 +17,7 @@ Shader::Shader(const char * vertFile, const char * fragFile) {
 	if (!success) {
 		glGetShaderInfoLog(vertShader, LOG_LEN, NULL, log);
 		cerr << "Error in vertex shader:\n" << log << endl;
+		system("pause");
 		exit(-1);
 	}
 
@@ -33,6 +34,7 @@ Shader::Shader(const char * vertFile, const char * fragFile) {
 	if (!success) {
 		glGetShaderInfoLog(fragShader, LOG_LEN, NULL, log);
 		cerr << "Error in fragment shader:\n" << log << endl;
+		system("pause");
 		exit(-1);
 	}
 
@@ -47,6 +49,7 @@ Shader::Shader(const char * vertFile, const char * fragFile) {
 	if (!success) {
 		glGetProgramInfoLog(shaderProg, LOG_LEN, NULL, log);
 		cerr << "Shader linking failed:\n" << log << endl;
+		system("pause");
 		exit(-1);
 	}
 
