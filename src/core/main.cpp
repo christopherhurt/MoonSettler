@@ -136,7 +136,7 @@ int main() {
 	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Texture * terrainTex = new Texture("res/terrain.png");
-	Material * terrainMaterial = new Material(terrainTex, 0.25f, 0.3f, 0.2f, 4);
+	Material * terrainMaterial = new Material(terrainTex, 0.25f, 0.75f, 0.25f, 8);
 	Terrain * terrain = new Terrain(10, 40, shader, cam, terrainMaterial, 234523);
 
 	// Game loop
@@ -200,7 +200,7 @@ int main() {
 
 		cam->update(*shader);
 
-		//terrain->updateAndRender();
+		terrain->updateAndRender();
 		object->render();
 
 		//
