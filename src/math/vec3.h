@@ -1,7 +1,7 @@
 #pragma once
 
 #include <math.h>
-#include "math/pi.h"
+#include "math/trig.h"
 #include "quaternion.h"
 
 class Vec3 {

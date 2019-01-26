@@ -18,10 +18,6 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader) {
 		drawWireframes = !drawWireframes;
 	}
 
-	//
-	// TODO: normalize direction vector for consistent speed in diagonal directions
-	//
-
 	// Movement
 	bool moveBack = keyDown(GLFW_KEY_S);
 	bool moveForward = keyDown(GLFW_KEY_W);
@@ -29,18 +25,31 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader) {
 	bool moveRight = keyDown(GLFW_KEY_D);
 	bool moveDown = keyDown(GLFW_KEY_F);
 	bool moveUp = keyDown(GLFW_KEY_R);
-	if (moveBack && !moveForward) {
-		cam->moveDepth(-MOVE_SPEED * delta);
+	
+	float depthSpeed = 0;
+	float sideSpeed = 0;
+
+	if (moveBack) {
+		depthSpeed--;
 	}
-	else if (moveForward && !moveBack) {
-		cam->moveDepth(MOVE_SPEED * delta);
+	if (moveForward) {
+		depthSpeed++;
 	}
-	if (moveLeft && !moveRight) {
-		cam->moveSide(-MOVE_SPEED * delta);
+	if (moveLeft) {
+		sideSpeed--;
 	}
-	else if (moveRight && !moveLeft) {
-		cam->moveSide(MOVE_SPEED * delta);
+	if (moveRight) {
+		sideSpeed++;
 	}
+
+	if (depthSpeed != 0 && sideSpeed != 0) {
+		depthSpeed = depthSpeed > 0 ? COS_45 : -COS_45;
+		sideSpeed = sideSpeed > 0 ? COS_45 : -COS_45;
+	}
+
+	cam->moveDepth(depthSpeed * MOVE_SPEED * delta);
+	cam->moveSide(sideSpeed * MOVE_SPEED * delta);
+
 	if (moveDown && !moveUp) {
 		cam->moveHeight(-MOVE_SPEED * delta);
 	}

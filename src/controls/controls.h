@@ -6,6 +6,7 @@
 #include "controls/camera.h"
 #include "rendering/shader.h"
 #include "time.h"
+#include "math/trig.h"
 
 constexpr float MOVE_SPEED = 15;
 constexpr float ROT_SPEED = 90;
