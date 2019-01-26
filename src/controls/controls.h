@@ -5,8 +5,9 @@
 #include "input.h"
 #include "controls/camera.h"
 #include "rendering/shader.h"
+#include "time.h"
 
-constexpr float MOVE_SPEED = 0.1f;
-constexpr float ROT_SPEED = 3.0f;
+constexpr float MOVE_SPEED = 15;
+constexpr float ROT_SPEED = 90;
 
 void checkControls(GLFWwindow * window, Camera * cam, Shader * shader);
