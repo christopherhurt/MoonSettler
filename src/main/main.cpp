@@ -12,7 +12,7 @@
 
 using namespace std;
 
-constexpr bool PRINT_FPS = false;
+constexpr bool PRINT_FPS = true;
 
 int main() {
 	cout << "Launching game...\n";
@@ -32,7 +32,7 @@ int main() {
 	Vec3 * pos = new Vec3(0, 0, 0);
 	Vec3 * forward = new Vec3(0, 0, 1);
 	Vec3 * up = new Vec3(0, 1, 0);
-	Camera * cam = new Camera(pos, forward, up);
+	Camera * cam = new Camera(pos, forward, up); // TODO: initialize camera height to terrain height
 
 	// Add lights
 	Vec3 * lightColor = new Vec3(1.0f, 1.0f, 1.0f);

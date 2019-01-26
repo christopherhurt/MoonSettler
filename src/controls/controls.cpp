@@ -48,11 +48,11 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader, Terrain *
 	if (depthSpeed != 0 || sideSpeed != 0) {
 		cam->moveDepth(depthSpeed * MOVE_SPEED * delta);
 		cam->moveSide(sideSpeed * MOVE_SPEED * delta);
+
+		float camHeight = terrain->getPlayerHeightAt(cam->getPos()->x, cam->getPos()->z);
+		cam->setHeight(camHeight);
 	}
 
-	float camHeight = terrain->getPlayerHeightAt(cam->getPos()->x, cam->getPos()->z);
-	cam->setHeight(camHeight);
-	
 	// Rotation
 	bool leftHeld = keyDown(GLFW_KEY_LEFT);
 	bool rightHeld = keyDown(GLFW_KEY_RIGHT);
