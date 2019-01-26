@@ -2,10 +2,10 @@
 
 #include <list>
 #include <math.h>
-#include "core/camera.h"
+#include "controls/camera.h"
 #include "chunk.h"
 #include "utils/unbind.h"
-#include "core/material.h"
+#include "rendering/material.h"
 
 constexpr int CHUNK_WIDTH = CHUNK_SIZE - 1;
 constexpr int VIEW_DISTANCE = 2;

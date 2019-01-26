@@ -1,11 +1,11 @@
 #pragma once
 
-#include "core/mesh.h"
-#include "core/texture.h"
+#include "rendering/mesh.h"
+#include "rendering/texture.h"
 #include "terrainGen.h"
 #include "math/mat4.h"
 #include "utils/matGen.h"
-#include "core/shader.h"
+#include "rendering/shader.h"
 
 class Chunk {
 public:

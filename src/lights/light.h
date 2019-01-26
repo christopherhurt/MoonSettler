@@ -1,7 +1,7 @@
 #pragma once
 
 #include "math/vec3.h"
-#include "core/shader.h"
+#include "rendering/shader.h"
 
 class Light {
 public:

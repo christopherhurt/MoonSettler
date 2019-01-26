@@ -1,7 +1,7 @@
 #pragma once
 
 #include "light.h"
-#include "core/shader.h"
+#include "rendering/shader.h"
 
 class DirectionalLight : public Light {
 public:

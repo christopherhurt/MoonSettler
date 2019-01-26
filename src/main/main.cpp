@@ -1,9 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "init.h"
-#include "shader.h"
-#include "gameObject.h"
-#include "camera.h"
+#include "management/init.h"
+#include "rendering/shader.h"
+#include "ecs/gameObject.h"
+#include "controls/camera.h"
 #include "terrain/terrain.h"
 #include "lights/light.h"
 #include "lights/directionalLight.h"
@@ -142,7 +142,7 @@ int main() {
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
-	
+
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -170,7 +170,7 @@ int main() {
 				frames = 0;
 			}
 		}
-		
+
 		// Updating screen
 		glfwSwapBuffers(window);
 	}

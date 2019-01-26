@@ -1,9 +1,9 @@
 #pragma once
 
-#include "mesh.h"
-#include "material.h"
+#include "rendering/mesh.h"
+#include "rendering/material.h"
 #include "utils/unbind.h"
-#include "shader.h"
+#include "rendering/shader.h"
 #include "utils/matGen.h"
 
 using namespace std;

@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "input.h"
-#include "core/camera.h"
-#include "core/shader.h"
+#include "controls/camera.h"
+#include "rendering/shader.h"
 
 constexpr float MOVE_SPEED = 0.1f;
 constexpr float ROT_SPEED = 3.0f;

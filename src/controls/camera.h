@@ -1,7 +1,7 @@
 #pragma once
 
 #include "math/vec3.h"
-#include "shader.h"
+#include "rendering/shader.h"
 #include "utils/matGen.h"
 
 class Camera {
