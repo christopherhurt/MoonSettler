@@ -2,7 +2,7 @@
 
 static bool drawWireframes = false;
 
-void checkControls(GLFWwindow * window, Camera * cam, Shader * shader) {
+void checkControls(GLFWwindow * window, Camera * cam, Shader * shader, Terrain * terrain) {
 	glfwPollEvents();
 	updateInput(window);
 	float delta = calcDeltaTime();
@@ -23,8 +23,6 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader) {
 	bool moveForward = keyDown(GLFW_KEY_W);
 	bool moveLeft = keyDown(GLFW_KEY_A);
 	bool moveRight = keyDown(GLFW_KEY_D);
-	bool moveDown = keyDown(GLFW_KEY_F);
-	bool moveUp = keyDown(GLFW_KEY_R);
 	
 	float depthSpeed = 0;
 	float sideSpeed = 0;
@@ -47,16 +45,14 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader) {
 		sideSpeed = sideSpeed > 0 ? COS_45 : -COS_45;
 	}
 
-	cam->moveDepth(depthSpeed * MOVE_SPEED * delta);
-	cam->moveSide(sideSpeed * MOVE_SPEED * delta);
-
-	if (moveDown && !moveUp) {
-		cam->moveHeight(-MOVE_SPEED * delta);
-	}
-	else if (moveUp && !moveDown) {
-		cam->moveHeight(MOVE_SPEED * delta);
+	if (depthSpeed != 0 || sideSpeed != 0) {
+		cam->moveDepth(depthSpeed * MOVE_SPEED * delta);
+		cam->moveSide(sideSpeed * MOVE_SPEED * delta);
 	}
 
+	float camHeight = terrain->getPlayerHeightAt(cam->getPos()->x, cam->getPos()->z);
+	cam->setHeight(camHeight);
+	
 	// Rotation
 	bool leftHeld = keyDown(GLFW_KEY_LEFT);
 	bool rightHeld = keyDown(GLFW_KEY_RIGHT);

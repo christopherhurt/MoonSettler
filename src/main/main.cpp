@@ -12,7 +12,7 @@
 
 using namespace std;
 
-constexpr bool PRINT_FPS = true;
+constexpr bool PRINT_FPS = false;
 
 int main() {
 	cout << "Launching game...\n";
@@ -48,7 +48,7 @@ int main() {
 
 	Texture * terrainTex = new Texture("res/terrain.png");
 	Material * terrainMaterial = new Material(terrainTex, 0.1f, 0.6f, 0.0f, 32);
-	Terrain * terrain = new Terrain(10, 40, shader, cam, terrainMaterial, 234523);
+	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 234523);
 
 	// Game loop
 	unsigned int frames = 0;
@@ -61,7 +61,7 @@ int main() {
 		// Do updating here
 		//
 
-		checkControls(window, cam, shader);
+		checkControls(window, cam, shader, terrain);
 
 		// Render objects (last)
 		terrain->updateAndRender();

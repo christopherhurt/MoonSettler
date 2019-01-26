@@ -1,7 +1,6 @@
 #include "terrainGen.h"
 
 static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed);
-static float getCompositeHeightAt(float x, float z, unsigned long seed);
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed);
 static float getAverageHeightAt(float x, float z, unsigned long seed);
 static float getHeightAt(float x, float z, unsigned long seed);
@@ -71,19 +70,7 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	return mesh;
 }
 
-static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed) {
-	float leftHeight = getCompositeHeightAt(x - 1, z, seed);
-	float rightHeight = getCompositeHeightAt(x + 1, z, seed);
-	float bottomHeight = getCompositeHeightAt(x, z - 1, seed);
-	float topHeight = getCompositeHeightAt(x, z + 1, seed);
-
-	Vec3 * normal = new Vec3(leftHeight - rightHeight, 2.0f, bottomHeight - topHeight);
-	normal->normalize();
-
-	return normal;
-}
-
-static float getCompositeHeightAt(float x, float z, unsigned long seed) {
+float getCompositeHeightAt(float x, float z, unsigned long seed) {
 	float height = 0;
 	float amplitude = 1;
 	float frequency = 1;
@@ -94,6 +81,18 @@ static float getCompositeHeightAt(float x, float z, unsigned long seed) {
 	}
 
 	return height;
+}
+
+static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed) {
+	float leftHeight = getCompositeHeightAt(x - 1, z, seed);
+	float rightHeight = getCompositeHeightAt(x + 1, z, seed);
+	float bottomHeight = getCompositeHeightAt(x, z - 1, seed);
+	float topHeight = getCompositeHeightAt(x, z + 1, seed);
+
+	Vec3 * normal = new Vec3(leftHeight - rightHeight, 2.0f, bottomHeight - topHeight);
+	normal->normalize();
+
+	return normal;
 }
 
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed) {

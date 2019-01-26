@@ -16,3 +16,4 @@ constexpr int SIDE_LENGTH = CHUNK_SIZE + (SAMPLES_PER_UNIT - 1) * (CHUNK_SIZE - 
 constexpr float INC = 1.0f / SAMPLES_PER_UNIT;
 
 Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed);
+float getCompositeHeightAt(float x, float z, unsigned long seed);
