@@ -7,6 +7,7 @@
 #include "terrain/terrain.h"
 #include "lights/light.h"
 #include "lights/directionalLight.h"
+#include "controls/controls.h"
 
 using namespace std;
 
@@ -124,9 +125,10 @@ int main() {
 
 	// Add lights
 	Vec3 * lightColor = new Vec3(1.0f, 1.0f, 1.0f);
-	Vec3 * direction = new Vec3(0.0f, -1.0f, 0.0f);
+	Vec3 * direction = new Vec3(-0.5f, -1.0f, -0.5f);
 	DirectionalLight * directionalLight = new DirectionalLight(lightColor, 1.0f, direction);
-	
+	directionalLight->load(*shader);
+
 	// Construct objects
 	Mesh * mesh = new Mesh(vertices, sizeof(vertices), texCoords, sizeof(texCoords), normals, sizeof(normals), indices, sizeof(indices), false);
 	Texture * texture = new Texture("res/dirt.png");
@@ -140,73 +142,15 @@ int main() {
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
-	bool drawWireframes = false;
-	const float MOVE_SPEED = 0.1f;
-	const float ROT_SPEED = 3.0f;
+	
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glfwPollEvents();
 
 		//
 		// Do updating here
 		//
 
-		// Toggle draw mode
-		if (glfwGetKey(window, GLFW_KEY_M)) {
-			if (drawWireframes) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-			else {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			drawWireframes = !drawWireframes;
-		}
-
-		// Movement
-		if (glfwGetKey(window, GLFW_KEY_S)) {
-			cam->moveDepth(-MOVE_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_W)) {
-			cam->moveDepth(MOVE_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_A)) {
-			cam->moveSide(-MOVE_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_D)) {
-			cam->moveSide(MOVE_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_F)) {
-			cam->moveHeight(-MOVE_SPEED);
-		}
-		if (glfwGetKey(window, GLFW_KEY_R)) {
-			cam->moveHeight(MOVE_SPEED);
-		}
-		
-		// Rotation
-		bool leftHeld = glfwGetKey(window, GLFW_KEY_LEFT);
-		bool rightHeld = glfwGetKey(window, GLFW_KEY_RIGHT);
-		bool downHeld = glfwGetKey(window, GLFW_KEY_DOWN);
-		bool upHeld = glfwGetKey(window, GLFW_KEY_UP);
-		if (leftHeld && !rightHeld) {
-			cam->turnHorizontal(ROT_SPEED);
-		}
-		if (rightHeld && !leftHeld) {
-			cam->turnHorizontal(-ROT_SPEED);
-		}
-		if (downHeld && !upHeld) {
-			cam->turnVertical(ROT_SPEED);
-		}
-		if (upHeld && !downHeld) {
-			cam->turnVertical(-ROT_SPEED);
-		}
-
-		cam->update(*shader);
-
-		// Lighting
-		Vec3 * lightDir = directionalLight->getDirection();
-		lightDir->x = (float)cos(glfwGetTime());
-		lightDir->z = (float)sin(glfwGetTime());
-		directionalLight->load(*shader);
+		checkControls(window, cam, shader);
 
 		// Render objects (last)
 		terrain->updateAndRender();
