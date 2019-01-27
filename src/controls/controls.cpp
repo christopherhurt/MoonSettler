@@ -1,7 +1,12 @@
 #include "controls.h"
 
+static constexpr float GRAVITY = 15;
+static constexpr float JUMP_SPEED = 15;
+
 static bool drawWireframes = false;
 static bool screenLocked = false;
+static float yVelocity = 0;
+static bool jumping = false;
 
 void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * terrain) {
 	glfwPollEvents();
@@ -17,6 +22,24 @@ void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * ter
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 		drawWireframes = !drawWireframes;
+	}
+
+	// Jumping and terrain collision
+	if (keyPressed(GLFW_KEY_SPACE) && !jumping) {
+		yVelocity += JUMP_SPEED;
+		jumping = true;
+	}
+
+	float newYVelocity = yVelocity - GRAVITY * delta;
+	float newYPos = cam->getPos()->y + newYVelocity * delta - 0.5f * GRAVITY * delta * delta;
+	yVelocity = newYVelocity;
+	cam->getPos()->y = newYPos;
+
+	float camHeight = terrain->getPlayerHeightAt(cam->getPos()->x, cam->getPos()->z);
+	if (cam->getPos()->y < camHeight) {
+		cam->setHeight(camHeight);
+		yVelocity = 0;
+		jumping = false;
 	}
 
 	// Movement
@@ -49,9 +72,6 @@ void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * ter
 	if (depthSpeed != 0 || sideSpeed != 0) {
 		cam->moveDepth(depthSpeed * MOVE_SPEED * delta);
 		cam->moveSide(sideSpeed * MOVE_SPEED * delta);
-
-		float camHeight = terrain->getPlayerHeightAt(cam->getPos()->x, cam->getPos()->z);
-		cam->setHeight(camHeight);
 	}
 
 	// Rotation
