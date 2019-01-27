@@ -8,8 +8,9 @@
 #include "time.h"
 #include "math/trig.h"
 #include "terrain/terrain.h"
+#include "management/window.h"
 
 constexpr float MOVE_SPEED = 10;
-constexpr float ROT_SPEED = 90;
+constexpr float ROT_SPEED = 700;
 
-void checkControls(GLFWwindow * window, Camera * cam, Shader * shader, Terrain * terrain);
+void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * terrain);

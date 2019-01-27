@@ -1,8 +1,9 @@
 #include "controls.h"
 
 static bool drawWireframes = false;
+static bool screenLocked = false;
 
-void checkControls(GLFWwindow * window, Camera * cam, Shader * shader, Terrain * terrain) {
+void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * terrain) {
 	glfwPollEvents();
 	updateInput(window);
 	float delta = calcDeltaTime();
@@ -54,21 +55,31 @@ void checkControls(GLFWwindow * window, Camera * cam, Shader * shader, Terrain *
 	}
 
 	// Rotation
-	bool leftHeld = keyDown(GLFW_KEY_LEFT);
-	bool rightHeld = keyDown(GLFW_KEY_RIGHT);
-	bool downHeld = keyDown(GLFW_KEY_DOWN);
-	bool upHeld = keyDown(GLFW_KEY_UP);
-	if (leftHeld && !rightHeld) {
-		cam->turnHorizontal(ROT_SPEED * delta);
+	if (!screenLocked && buttonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+		glfwSetInputMode(window->getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetCursorPos(window->getGLFWwindow(), (int)(window->getWidth() / 2), (int)(window->getHeight() / 2));
+		screenLocked = true;
 	}
-	else if (rightHeld && !leftHeld) {
-		cam->turnHorizontal(-ROT_SPEED * delta);
+	else if (keyPressed(GLFW_KEY_ESCAPE)) {
+		glfwSetInputMode(window->getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		screenLocked = false;
 	}
-	if (downHeld && !upHeld) {
-		cam->turnVertical(ROT_SPEED * delta);
-	}
-	else if (upHeld && !downHeld) {
-		cam->turnVertical(-ROT_SPEED * delta);
+
+	if (screenLocked) {
+		double mouseX;
+		double mouseY;
+		glfwGetCursorPos(window->getGLFWwindow(), &mouseX, &mouseY);
+
+		mouseX = mouseX / window->getWidth() * 2 - 1;
+		mouseY = -mouseY / window->getHeight() * 2 + 1;
+
+		float rotXAmt = (float)mouseX;
+		float rotYAmt = (float)mouseY;
+
+		cam->turnHorizontal(-rotXAmt * ROT_SPEED / window->getRefreshRate());
+		cam->turnVertical(-rotYAmt * ROT_SPEED / window->getRefreshRate());
+
+		glfwSetCursorPos(window->getGLFWwindow(), (int)(window->getWidth() / 2), (int)(window->getHeight() / 2));
 	}
 
 	cam->update(*shader);

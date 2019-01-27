@@ -7,16 +7,16 @@ static std::vector<bool> buttonsPressed(NUM_BUTTONS, false);
 static std::vector<bool> buttonsDown(NUM_BUTTONS, false);
 static std::vector<bool> buttonsReleased(NUM_BUTTONS, false);
 
-void updateInput(GLFWwindow* window) {
+void updateInput(Window * window) {
 	for (int key = 0; key < NUM_KEYS; key++) {
-		bool keyDown = glfwGetKey(window, key);
+		bool keyDown = glfwGetKey(window->getGLFWwindow(), key);
 		keysReleased[key] = keysDown[key] && !keyDown;
 		keysPressed[key] = !keysDown[key] && keyDown;
 		keysDown[key] = keyDown;
 	}
 
 	for (int button = 0; button < NUM_BUTTONS; button++) {
-		bool buttonDown = glfwGetMouseButton(window, button);
+		bool buttonDown = glfwGetMouseButton(window->getGLFWwindow(), button);
 		buttonsReleased[button] = buttonsDown[button] && !buttonDown;
 		buttonsPressed[button] = !buttonsDown[button] && buttonDown;
 		buttonsDown[button] = buttonDown;

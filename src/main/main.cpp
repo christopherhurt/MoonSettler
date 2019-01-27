@@ -9,6 +9,7 @@
 #include "lights/directionalLight.h"
 #include "controls/controls.h"
 #include "objects/cube.h"
+#include "management/window.h"
 
 using namespace std;
 
@@ -17,14 +18,12 @@ constexpr bool PRINT_FPS = true;
 int main() {
 	cout << "Launching game...\n";
 
-	const unsigned int width = 1200;
-	const unsigned int height = 800;
-	GLFWwindow * window = initGLFW(width, height, "Dank memes!");
+	Window * window = initGLFW(1200, 800, "Dank memes!");
 
 	// Load shaders
 	Shader * shader = new Shader("src/shaders/vert.glsl", "src/shaders/frag.glsl");
 	shader->use();
-	Mat4 * projectionMatrix = genPerspectiveProjectionMatrix(45, width, height, 0.1f, 1000);
+	Mat4 * projectionMatrix = genPerspectiveProjectionMatrix(45, window->getAspectRatio(), 0.1f, 1000);
 	shader->setMat4("projection", *projectionMatrix);
 	delete projectionMatrix;
 
@@ -32,7 +31,7 @@ int main() {
 	Vec3 * pos = new Vec3(0, 0, 0);
 	Vec3 * forward = new Vec3(0, 0, 1);
 	Vec3 * up = new Vec3(0, 1, 0);
-	Camera * cam = new Camera(pos, forward, up); // TODO: initialize camera height to terrain height
+	Camera * cam = new Camera(pos, forward, up);
 
 	// Add lights
 	Vec3 * lightColor = new Vec3(1.0f, 1.0f, 1.0f);
@@ -48,13 +47,12 @@ int main() {
 
 	Texture * terrainTex = new Texture("res/terrain.png");
 	Material * terrainMaterial = new Material(terrainTex, 0.1f, 0.6f, 0.0f, 32);
-	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 234523);
+	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 755432);
 
 	// Game loop
 	unsigned int frames = 0;
 	double lastTime = glfwGetTime();
-
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window->getGLFWwindow())) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//
@@ -83,7 +81,7 @@ int main() {
 		}
 
 		// Updating screen
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window->getGLFWwindow());
 	}
 
 	// Clean up resources
@@ -94,6 +92,7 @@ int main() {
 	delete cam;
 	delete directionalLight;
 	delete shader;
+	delete window;
 	glfwTerminate();
 
 	return 0;

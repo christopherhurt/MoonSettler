@@ -4,7 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 #include <iostream>
+#include "management/window.h"
 
 using namespace std;
 
-GLFWwindow * initGLFW(const unsigned int width, const unsigned int height, const char * title);
+Window * initGLFW(const unsigned int width, const unsigned int height, const char * title);
