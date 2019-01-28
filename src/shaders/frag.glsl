@@ -24,7 +24,7 @@ struct DirectionalLight {
 	vec3 direction;
 };
 
-const int LIGHT_LEVELS = 4;
+const int LIGHT_LEVELS = 24;
 
 uniform Material material;
 uniform DirectionalLight directionalLight;
