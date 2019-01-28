@@ -47,7 +47,7 @@ int main() {
 
 	Texture * terrainTex = new Texture("res/terrain.png");
 	Material * terrainMaterial = new Material(terrainTex, 0.1f, 0.6f, 0.0f, 32);
-	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 755432);
+	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 96865);
 
 	// Game loop
 	unsigned int frames = 0;

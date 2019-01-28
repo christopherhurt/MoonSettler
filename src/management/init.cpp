@@ -7,6 +7,8 @@ Window * initGLFW(const unsigned int width, const unsigned int height, const cha
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// Create window
 	GLFWwindow * glfwWindow = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -29,6 +31,7 @@ Window * initGLFW(const unsigned int width, const unsigned int height, const cha
 	// Set configurations
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 	stbi_set_flip_vertically_on_load(true);
 
 	GLFWmonitor * monitor = glfwGetPrimaryMonitor();

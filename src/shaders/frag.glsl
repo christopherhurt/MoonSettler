@@ -24,6 +24,8 @@ struct DirectionalLight {
 	vec3 direction;
 };
 
+const int LIGHT_LEVELS = 4;
+
 uniform Material material;
 uniform DirectionalLight directionalLight;
 
@@ -31,15 +33,19 @@ void main() {
 	vec3 diffuseMapColor = texture(material.diffuseMap, texCoords).xyz;
 	vec3 lightColor = directionalLight.basic.color;
 
-	vec3 ambient = material.ambient * lightColor;
+	float ambientFactor = material.ambient;
 
 	float diffuseAmt = max(dot(normal, -directionalLight.direction), 0.0);
-	vec3 diffuse = material.diffuse * diffuseAmt * lightColor;
+	float diffuseFactor = material.diffuse * diffuseAmt;
 
 	vec3 reflection = reflect(directionalLight.direction, normal);
 	float specularAmt = pow(max(dot(toCam, reflection), 0.0), material.shininess);
 	vec3 specular = material.specular * specularAmt * lightColor;
 	
-	vec3 finalColor = diffuseMapColor * (ambient + diffuse) + specular;
+	float ambientDiffuseFactor = ambientFactor + diffuseFactor;
+	ambientDiffuseFactor = floor(ambientDiffuseFactor * LIGHT_LEVELS) / LIGHT_LEVELS;
+	vec3 ambientDiffuse = ambientDiffuseFactor * lightColor;
+
+	vec3 finalColor = diffuseMapColor * ambientDiffuse + specular;
 	outColor = vec4(finalColor, 1.0);
 }
