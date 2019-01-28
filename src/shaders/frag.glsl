@@ -35,7 +35,9 @@ uniform DirectionalLight directionalLight;
 
 void main() {
 	// Diffuse map
-	vec3 diffuseMapColor = texture(material.diffuseMap, texCoords).xyz;
+	vec3 diffuseMapColor = texture(material.diffuseMap, texCoords).xyz; // TODO
+	//float grayness = 0.4;
+	//vec3 diffuseMapColor = vec3(grayness, grayness, grayness); // TODO
 
 	// Lighting
 	vec3 lightColor = directionalLight.basic.color;
