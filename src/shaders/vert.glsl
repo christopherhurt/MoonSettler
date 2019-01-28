@@ -19,6 +19,6 @@ void main() {
 	normal = normalize(mat3(transpose(inverse(transform))) * normalIn);
 
 	vec4 worldPos = transform * vec4(pos, 1.0);
-	toCam = normalize(camLoc - worldPos.xyz);
+	toCam = camLoc - worldPos.xyz;
 	gl_Position = projection * view * worldPos;
 }
