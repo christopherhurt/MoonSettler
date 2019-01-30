@@ -5,10 +5,12 @@
 
 class Material {
 public:
-	inline Material(Texture * diffuseMapIn, float ambientIn, float diffuseIn, float specularIn, int shininessIn) : diffuseMap(diffuseMapIn), ambient(ambientIn), diffuse(diffuseIn), specular(specularIn), shininess(shininessIn) {}
+	Material(Vec3 * colorIn, float ambientIn, float diffuseIn, float specularIn, int shininessIn);
 	void loadAndBind(Shader &shader);
-	inline ~Material() { delete diffuseMap; }
+	inline void attachDiffuseMap(Texture * diffuseMapIn) { diffuseMap = diffuseMapIn; }
+	~Material();
 private:
+	Vec3 * color;
 	Texture * diffuseMap;
 	float ambient;
 	float diffuse;

@@ -42,11 +42,11 @@ int main() {
 	// Construct objects
 	Mesh * mesh = new Mesh(CUBE_VERTICES, sizeof(CUBE_VERTICES), CUBE_TEX_COORDS, sizeof(CUBE_TEX_COORDS), CUBE_NORMALS, sizeof(CUBE_NORMALS), CUBE_INDICES, sizeof(CUBE_INDICES), false);
 	Texture * texture = new Texture("res/dirt.png");
-	Material * material = new Material(texture, 0.2f, 0.5f, 0.2f, 8);
-	GameObject * object = new GameObject(0, 0, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
+	Material * material = new Material(new Vec3(0, 0, 0), 0.2f, 0.5f, 0.2f, 8);
+	material->attachDiffuseMap(texture);
+	GameObject * object = new GameObject(0, 10.5f, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
-	Texture * terrainTex = new Texture("res/terrain.png");
-	Material * terrainMaterial = new Material(terrainTex, 0.1f, 0.6f, 0.0f, 32);
+	Material * terrainMaterial = new Material(new Vec3(0.4f, 0.4f, 0.4f), 0.1f, 0.6f, 0.0f, 32);
 	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 96865);
 
 	// Game loop

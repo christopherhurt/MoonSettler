@@ -7,7 +7,9 @@ in vec3 toCam;
 out vec4 outColor;
 
 struct Material {
+	vec3 color;
 	sampler2D diffuseMap;
+	bool useDiffuseMap;
 	float ambient;
 	float diffuse;
 	float specular;
@@ -24,7 +26,7 @@ struct DirectionalLight {
 	vec3 direction;
 };
 
-const int LIGHT_LEVELS = 28;
+const int LIGHT_LEVELS = 32;
 
 const vec3 FOG_COLOR = vec3(0.0, 0.0, 0.0);
 const float FOG_DISTANCE = 60;
@@ -34,10 +36,15 @@ uniform Material material;
 uniform DirectionalLight directionalLight;
 
 void main() {
-	// Diffuse map
-	vec3 diffuseMapColor = texture(material.diffuseMap, texCoords).xyz; // TODO
-	//float grayness = 0.4;
-	//vec3 diffuseMapColor = vec3(grayness, grayness, grayness); // TODO
+	// Color/diffuse map
+	vec3 objectColor;
+	if(material.useDiffuseMap) {
+		vec4 texColor = texture(material.diffuseMap, texCoords);
+		if(texColor.a == 0.0) discard;
+		objectColor = texColor.rgb;
+	} else {
+		objectColor = material.color;
+	}
 
 	// Lighting
 	vec3 lightColor = directionalLight.basic.color;
@@ -55,7 +62,7 @@ void main() {
 	ambientDiffuseFactor = floor(ambientDiffuseFactor * LIGHT_LEVELS) / LIGHT_LEVELS;
 	vec3 ambientDiffuse = ambientDiffuseFactor * lightColor;
 
-	vec3 litColor = diffuseMapColor * ambientDiffuse + specular;
+	vec3 litColor = objectColor * ambientDiffuse + specular;
 
 	// Fog
 	float distFromCam = length(toCam.xz);
