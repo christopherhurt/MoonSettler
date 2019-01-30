@@ -21,7 +21,7 @@ int main() {
 	Window * window = initGLFW(1200, 800, "Dank memes!");
 
 	// Load shaders
-	Shader * shader = new Shader("src/shaders/vert.glsl", "src/shaders/frag.glsl");
+	Shader * shader = new Shader("src/shaders/objectVert.glsl", "src/shaders/objectFrag.glsl");
 	shader->use();
 	Mat4 * projectionMatrix = genPerspectiveProjectionMatrix(45, window->getAspectRatio(), 0.1f, 1000);
 	shader->setMat4("projection", *projectionMatrix);
