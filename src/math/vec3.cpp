@@ -17,16 +17,32 @@ Vec3 * Vec3::cross(Vec3 &vec) {
 }
 
 Vec3 * Vec3::normalize() {
-	double dX = (double)x;
-	double dY = (double)y;
-	double dZ = (double)z;
-	float length = (float)sqrt(dX * dX + dY * dY + dZ * dZ);
+	float len = length();
 
-	x /= length;
-	y /= length;
-	z /= length;
+	x /= len;
+	y /= len;
+	z /= len;
 
 	return this;
+}
+
+float Vec3::length() {
+	return (float)sqrt(x * x + y * y + z * z);
+}
+
+float Vec3::dot(Vec3 &vec) {
+	return x * vec.x + y * vec.y + z * vec.z;
+}
+
+float Vec3::angleBetween(Vec3 &vec) {
+	float dotProduct = this->dot(vec);
+	float v1Len = this->length();
+	float v2Len = vec.length();
+
+	float thetaRad = acos(dotProduct / (v1Len * v2Len));
+	float thetaDeg = radToDeg(thetaRad);
+
+	return thetaDeg;
 }
 
 void Vec3::rotate(Vec3 &axis, float theta) {

@@ -14,5 +14,8 @@ public:
 	Vec3 * operator*(float val);
 	Vec3 * cross(Vec3 &vec);
 	Vec3 * normalize();
+	float length();
+	float dot(Vec3 &vec);
+	float angleBetween(Vec3 &vec);
 	void rotate(Vec3 &axis, float theta);
 };
