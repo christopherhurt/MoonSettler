@@ -46,7 +46,7 @@ int main() {
 
 	// Create skybox
 	const char * skyboxTextures[] = { "res/skyboxTemp/R.png", "res/skyboxTemp/L.png", "res/skyboxTemp/U.png", "res/skyboxTemp/D.png", "res/skyboxTemp/F.png", "res/skyboxTemp/B.png" };
-	Skybox * skybox = new Skybox(skyboxTextures);
+	Skybox * skybox = new Skybox(skyboxTextures, skyboxShader);
 
 	// Construct objects
 	Mesh * mesh = new Mesh(CUBE_VERTICES, sizeof(CUBE_VERTICES), CUBE_TEX_COORDS, sizeof(CUBE_TEX_COORDS), CUBE_NORMALS, sizeof(CUBE_NORMALS), CUBE_INDICES, sizeof(CUBE_INDICES), false);
@@ -75,6 +75,9 @@ int main() {
 		// Render skybox (second-to-last)
 		skyboxShader->use();
 		skyboxShader->setMat4("view", *viewMatrix);
+
+		Vec3 rot(0, (float)glfwGetTime() * -5, 0);
+		skybox->setRotation(rot);
 
 		skybox->render();
 

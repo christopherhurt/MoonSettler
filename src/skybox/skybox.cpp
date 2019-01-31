@@ -1,6 +1,10 @@
 #include "skybox.h"
 
-Skybox::Skybox(const char * textures[]) {
+Skybox::Skybox(const char * textures[], Shader * shaderIn) : shader(shaderIn) {
+	// Initialize rotation
+	Vec3 rot(0, 0, 0);
+	setRotation(rot);
+
 	// Vertex data
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -57,6 +61,13 @@ void Skybox::render() {
 	glDepthMask(GL_FALSE);
 	glDrawElements(GL_TRIANGLES, sizeof(CUBE_INDICES) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 	glDepthMask(GL_TRUE);
+}
+
+void Skybox::setRotation(Vec3& rot) {
+	Mat4 * transform = genTransformationMatrix(0, 0, 0, rot.x, rot.y, rot.z, 1, 1, 1);
+	shader->use();
+	shader->setMat4("transform", *transform);
+	delete transform;
 }
 
 Skybox::~Skybox() {
