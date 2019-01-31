@@ -6,14 +6,7 @@
 #include "chunk.h"
 #include "utils/unbind.h"
 #include "rendering/material.h"
-#include "terrainGen.h"
-
-constexpr float TERRAIN_SCALE = 10;
-constexpr float TERRAIN_AMPLITUDE = 40;
-
-constexpr int CHUNK_WIDTH = CHUNK_SIZE - 1;
-constexpr int VIEW_DISTANCE = 3;
-constexpr int MAX_CHUNKS_LOADED = 1000;
+#include "terrainFactors.h"
 
 class Terrain {
 public:

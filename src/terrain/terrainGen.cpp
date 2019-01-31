@@ -17,13 +17,13 @@ Mesh * genTerrainChunk(int chunkX, int chunkZ, unsigned long seed) {
 	unsigned int * indices = new unsigned int[indicesLength];
 
 	int index = 0;
-	for (float currZ = 0; currZ <= CHUNK_SIZE - 1; currZ += INC) {
-		for(float currX = 0; currX <= CHUNK_SIZE - 1; currX += INC) {
-			float texU = (float)currX / (CHUNK_SIZE - 1);
-			float texV = (float)currZ / (CHUNK_SIZE - 1);
+	for (float currZ = 0; currZ <= CHUNK_WIDTH; currZ += INC) {
+		for(float currX = 0; currX <= CHUNK_WIDTH; currX += INC) {
+			float texU = (float)currX / CHUNK_WIDTH;
+			float texV = (float)currZ / CHUNK_WIDTH;
 
-			float vertX = (float)(currX + chunkX * (CHUNK_SIZE - 1));
-			float vertZ = (float)(currZ + chunkZ * (CHUNK_SIZE - 1));
+			float vertX = (float)(currX + chunkX * CHUNK_WIDTH);
+			float vertZ = (float)(currZ + chunkZ * CHUNK_WIDTH);
 			float vertY = getCompositeHeightAt(vertX, vertZ, seed);
 			
 			vertices[index * 3] = vertX;
