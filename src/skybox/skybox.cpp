@@ -58,9 +58,9 @@ void Skybox::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
-	glDepthMask(GL_FALSE);
+	glDepthFunc(GL_LEQUAL);
 	glDrawElements(GL_TRIANGLES, sizeof(CUBE_INDICES) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
-	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LESS);
 }
 
 void Skybox::setRotation(Vec3& rot) {

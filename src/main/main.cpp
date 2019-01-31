@@ -55,7 +55,7 @@ int main() {
 	material->attachDiffuseMap(texture);
 	GameObject * object = new GameObject(0, 10.5f, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
-	Material * terrainMaterial = new Material(new Vec3(0.4f, 0.4f, 0.4f), 0.1f, 0.6f, 0.0f, 32);
+	Material * terrainMaterial = new Material(new Vec3(0.25f, 0.25f, 0.25f), 0.1f, 0.6f, 0.0f, 32);
 	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 23423);
 
 	// Game loop
@@ -72,7 +72,15 @@ int main() {
 		checkControls(window, cam, terrain);
 		Mat4 * viewMatrix = cam->constructViewMatrix();
 
-		// Render skybox (second-to-last)
+		// Render objects (second-to-last)
+		shader->use();
+		shader->setMat4("view", *viewMatrix);
+		shader->setVec3("camLoc", *cam->getPos());
+
+		terrain->updateAndRender();
+		object->render();
+
+		// Render skybox (last)
 		skyboxShader->use();
 		skyboxShader->setMat4("view", *viewMatrix);
 
@@ -80,14 +88,6 @@ int main() {
 		skybox->setRotation(rot);
 
 		skybox->render();
-
-		// Render objects (last)
-		shader->use();
-		shader->setMat4("view", *viewMatrix);
-		shader->setVec3("camLoc", *cam->getPos());
-
-		terrain->updateAndRender();
-		object->render();
 
 		delete viewMatrix;
 

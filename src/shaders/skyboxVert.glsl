@@ -11,5 +11,5 @@ uniform mat4 projection;
 void main() {
 	texCoords = pos;
 	mat4 viewRot = mat4(mat3(view));
-	gl_Position = projection * viewRot * transform * vec4(pos, 1.0);
+	gl_Position = (projection * viewRot * transform * vec4(pos, 1.0)).xyww;
 }
