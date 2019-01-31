@@ -10,6 +10,7 @@
 #include "controls/controls.h"
 #include "objects/cube.h"
 #include "management/window.h"
+#include "skybox/skybox.h"
 
 using namespace std;
 
@@ -22,9 +23,12 @@ int main() {
 
 	// Load shaders
 	Shader * shader = new Shader("src/shaders/objectVert.glsl", "src/shaders/objectFrag.glsl");
-	shader->use();
+	Shader * skyboxShader = new Shader("src/shaders/skyboxVert.glsl", "src/shaders/skyboxFrag.glsl");
 	Mat4 * projectionMatrix = genPerspectiveProjectionMatrix(45, window->getAspectRatio(), 0.1f, 1000);
+	shader->use();
 	shader->setMat4("projection", *projectionMatrix);
+	skyboxShader->use();
+	skyboxShader->setMat4("projection", *projectionMatrix);
 	delete projectionMatrix;
 
 	// Create camera
@@ -37,7 +41,12 @@ int main() {
 	Vec3 * lightColor = new Vec3(1.0f, 1.0f, 1.0f);
 	Vec3 * direction = new Vec3(-0.5f, -1.0f, -0.5f);
 	DirectionalLight * directionalLight = new DirectionalLight(lightColor, 1.0f, direction);
+	shader->use();
 	directionalLight->load(*shader);
+
+	// Create skybox
+	const char * skyboxTextures[] = { "res/skyboxTemp/R.png", "res/skyboxTemp/L.png", "res/skyboxTemp/U.png", "res/skyboxTemp/D.png", "res/skyboxTemp/F.png", "res/skyboxTemp/B.png" };
+	Skybox * skybox = new Skybox(skyboxTextures);
 
 	// Construct objects
 	Mesh * mesh = new Mesh(CUBE_VERTICES, sizeof(CUBE_VERTICES), CUBE_TEX_COORDS, sizeof(CUBE_TEX_COORDS), CUBE_NORMALS, sizeof(CUBE_NORMALS), CUBE_INDICES, sizeof(CUBE_INDICES), false);
@@ -47,7 +56,7 @@ int main() {
 	GameObject * object = new GameObject(0, 10.5f, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Material * terrainMaterial = new Material(new Vec3(0.4f, 0.4f, 0.4f), 0.1f, 0.6f, 0.0f, 32);
-	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 96865);
+	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 23423);
 
 	// Game loop
 	unsigned int frames = 0;
@@ -59,11 +68,25 @@ int main() {
 		// Do updating here
 		//
 
-		checkControls(window, cam, shader, terrain);
+		// Camera and controls
+		checkControls(window, cam, terrain);
+		Mat4 * viewMatrix = cam->constructViewMatrix();
+
+		// Render skybox (second-to-last)
+		skyboxShader->use();
+		skyboxShader->setMat4("view", *viewMatrix);
+
+		skybox->render();
 
 		// Render objects (last)
+		shader->use();
+		shader->setMat4("view", *viewMatrix);
+		shader->setVec3("camLoc", *cam->getPos());
+
 		terrain->updateAndRender();
 		object->render();
+
+		delete viewMatrix;
 
 		//
 		// End updating
@@ -91,7 +114,9 @@ int main() {
 	delete terrain;
 	delete cam;
 	delete directionalLight;
+	delete skybox;
 	delete shader;
+	delete skyboxShader;
 	delete window;
 	glfwTerminate();
 

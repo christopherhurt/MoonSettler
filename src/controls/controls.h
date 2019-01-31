@@ -13,4 +13,4 @@
 constexpr float MOVE_SPEED = 10;
 constexpr float ROT_SPEED = 700;
 
-void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * terrain);
+void checkControls(Window * window, Camera * cam, Terrain * terrain);

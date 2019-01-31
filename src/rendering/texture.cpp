@@ -7,12 +7,10 @@ Texture::Texture(const char * texFile) {
 	int numChannels;
 	unsigned char * data = stbi_load(texFile, &width, &height, &numChannels, 0);
 
-	// TODO
-	cout << "Num channels: " << numChannels << endl;
-
 	// Checking image loading
 	if (!data) {
 		cerr << "Failed to load texture \"" << texFile << "\"\n";
+		stbi_image_free(data);
 		system("pause");
 		exit(-1);
 	}

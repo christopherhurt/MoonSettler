@@ -76,12 +76,8 @@ void Camera::turnVertical(float theta) {
 	delete horiz;
 }
 
-void Camera::update(Shader &shader) {
-	Mat4 * viewMatrix = genViewMatrix(pos, forward, up);
-	shader.setMat4("view", *viewMatrix);
-	delete viewMatrix;
-
-	shader.setVec3("camLoc", *getPos());
+Mat4 * Camera::constructViewMatrix() {
+	return genViewMatrix(pos, forward, up);
 }
 
 Camera::~Camera() {

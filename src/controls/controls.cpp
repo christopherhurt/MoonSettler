@@ -8,7 +8,7 @@ static bool screenLocked = false;
 static float yVelocity = 0;
 static bool jumping = false;
 
-void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * terrain) {
+void checkControls(Window * window, Camera * cam, Terrain * terrain) {
 	glfwPollEvents();
 	updateInput(window);
 	float delta = calcDeltaTime();
@@ -101,6 +101,4 @@ void checkControls(Window * window, Camera * cam, Shader * shader, Terrain * ter
 
 		glfwSetCursorPos(window->getGLFWwindow(), (int)(window->getWidth() / 2), (int)(window->getHeight() / 2));
 	}
-
-	cam->update(*shader);
 }

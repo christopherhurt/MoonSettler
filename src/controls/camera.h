@@ -14,7 +14,7 @@ public:
 	void moveDepth(float delta);
 	void turnHorizontal(float theta);
 	void turnVertical(float theta);
-	void update(Shader &shader);
+	Mat4 * constructViewMatrix();
 	inline void setHeight(float height) { pos->y = height; }
 	inline Vec3 * getPos() { return pos; }
 	~Camera();
