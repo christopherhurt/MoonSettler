@@ -11,3 +11,6 @@ constexpr int SAMPLES_PER_UNIT = 8;
 constexpr int OCTAVES = 3;
 constexpr float AMPLITUDE_MULTIPLIER = 0.4f;
 constexpr float FREQUENCY_MULTIPLIER = 2;
+
+constexpr float CORNER_AVERAGE_FACTOR = 0.05f;
+constexpr float EDGE_AVERAGE_FACTOR = 0.1f;

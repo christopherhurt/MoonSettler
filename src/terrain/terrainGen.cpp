@@ -1,5 +1,8 @@
 #include "terrainGen.h"
 
+static constexpr float CENTER_AVERAGE_FACTOR = 1 - 4 * (CORNER_AVERAGE_FACTOR + EDGE_AVERAGE_FACTOR);
+static constexpr int HALF_INT_MAX = INT_MAX / 2;
+
 static Vec3 * getNormalVectorAt(float x, float z, unsigned long seed);
 static float getInterpolatedHeightAt(float x, float z, unsigned long seed);
 static float getAverageHeightAt(float x, float z, unsigned long seed);
@@ -117,23 +120,19 @@ static float getInterpolatedHeightAt(float x, float z, unsigned long seed) {
 }
 
 static float getAverageHeightAt(float x, float z, unsigned long seed) {
-	const float cornerFactor = 0.05f;
-	const float edgeFactor = 0.1f;
-	const float centerFactor = 1 - cornerFactor * 4 - edgeFactor * 4;
-
 	float totalHeight = 0;
 	for (int i = -1; i <= 1; i++) {
 		for (int j = -1; j <= 1; j++) {
 			float currHeight = getHeightAt(x + i, z + j, seed);
 
 			if (i == 0 && j == 0) {
-				totalHeight += currHeight * centerFactor;
+				totalHeight += currHeight * CENTER_AVERAGE_FACTOR;
 			}
 			else if (i != 0 && j != 0) {
-				totalHeight += currHeight * cornerFactor;
+				totalHeight += currHeight * CORNER_AVERAGE_FACTOR;
 			}
 			else {
-				totalHeight += currHeight * edgeFactor;
+				totalHeight += currHeight * EDGE_AVERAGE_FACTOR;
 			}
 		}
 	}
@@ -142,7 +141,10 @@ static float getAverageHeightAt(float x, float z, unsigned long seed) {
 }
 
 static float getHeightAt(float x, float z, unsigned long seed) {
-	int pseudoSeed = (int)(x * 833433) * (int)(z * 743301) + seed;
+	srand(seed);
+	unsigned int tempSeed = (unsigned int)(x * rand() / 2 + HALF_INT_MAX);
+	srand(tempSeed);
+	unsigned int pseudoSeed = (unsigned int)(z * rand() / 2 + HALF_INT_MAX);
 	srand(pseudoSeed);
 	return (float)rand() / RAND_MAX - 0.5f;
 }

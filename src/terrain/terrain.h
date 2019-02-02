@@ -10,7 +10,7 @@
 
 class Terrain {
 public:
-	Terrain(Shader * shaderIn, Camera * camIn, Material * materialIn, unsigned long seedIn);
+	Terrain(Shader * shaderIn, Camera * camIn, Material * materialIn, unsigned int seedIn);
 	void updateAndRender();
 	float getPlayerHeightAt(float x, float z);
 	~Terrain();
@@ -18,6 +18,6 @@ private:
 	Shader * shader;
 	Camera * cam;
 	Material * material;
-	unsigned long seed;
+	unsigned int seed;
 	list<Chunk *> * chunks;
 };

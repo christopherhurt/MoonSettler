@@ -2,7 +2,7 @@
 
 static Chunk * getChunkAt(int x, int z, list<Chunk *> * chunks);
 
-Terrain::Terrain(Shader * shaderIn, Camera * camIn, Material * materialIn, unsigned long seedIn) : shader(shaderIn), cam(camIn), material(materialIn), seed(seedIn) {
+Terrain::Terrain(Shader * shaderIn, Camera * camIn, Material * materialIn, unsigned int seedIn) : shader(shaderIn), cam(camIn), material(materialIn), seed(seedIn) {
 	chunks = new list<Chunk *>();
 }
 

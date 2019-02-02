@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <math.h>
+#include <limits.h>
 #include "rendering/mesh.h"
 #include "utils/interpolation.h"
 #include "math/vec3.h"

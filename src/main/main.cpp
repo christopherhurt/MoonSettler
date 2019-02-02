@@ -5,6 +5,7 @@
 #include "ecs/gameObject.h"
 #include "controls/camera.h"
 #include "terrain/terrain.h"
+#include "terrain/terrainGen.h"
 #include "lights/light.h"
 #include "lights/directionalLight.h"
 #include "controls/controls.h"
@@ -15,6 +16,7 @@
 using namespace std;
 
 constexpr bool PRINT_FPS = true;
+constexpr unsigned int SEED = 2930238;
 
 int main() {
 	cout << "Launching game...\n";
@@ -53,10 +55,10 @@ int main() {
 	Texture * texture = new Texture("res/dirt.png");
 	Material * material = new Material(new Vec3(0, 0, 0), 0.2f, 0.5f, 0.2f, 8);
 	material->attachDiffuseMap(texture);
-	GameObject * object = new GameObject(0, 10.5f, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
+	GameObject * object = new GameObject(0, getCompositeHeightAt(0, 0, SEED) + 1, 0, 0, 0, 0, 1, 1, 1, mesh, material, shader);
 
 	Material * terrainMaterial = new Material(new Vec3(0.25f, 0.25f, 0.25f), 0.1f, 0.6f, 0.0f, 32);
-	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, 23423);
+	Terrain * terrain = new Terrain(shader, cam, terrainMaterial, SEED);
 
 	// Game loop
 	unsigned int frames = 0;
