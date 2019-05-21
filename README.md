@@ -1,2 +1,2 @@
-# BikiniBottomRoyale
-A deadly battle for Bikini Bottom between its titan warriors. Only one will win...
+# MoonSettler
+An exploration sandbox game about landing on and settling the moon
